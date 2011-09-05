@@ -1,0 +1,26 @@
+{
+  "name": "Nightfall",
+  "version": "0.1",
+  "description": "Add ability to hide a douban topic from topic list",
+  "background_page": "background.html",
+  "page_action" :
+  {
+    "default_icon" : "icon-19.png",
+    "default_title" : "Hover a topic and click \"mute\" on to remove it"
+  },
+  "content_scripts" : [
+    {
+      "matches" : [
+        "http://www.douban.com/group/"
+      ],
+      "css" : ["inject.css"],
+      "js" : ["jquery.min.js", "muteTopic.js"],
+      "all_frames" : false,
+      "run_at" : "document_end"
+    }
+  ],
+  "icons" : {
+    "48" : "icon-48.png",
+    "128" : "icon-128.png"
+  }
+}
