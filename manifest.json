@@ -14,7 +14,7 @@
         "http://www.douban.com/group/"
       ],
       "css" : ["inject.css"],
-      "js" : ["jquery.min.js", "muteTopic.js"],
+      "js" : ["jquery.min.js", "inject.js"],
       "all_frames" : false,
       "run_at" : "document_end"
     }
