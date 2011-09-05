@@ -3,13 +3,14 @@ table.olt,
 table.olt tr.pl,
 table.olt tr.pl td {position:relative}
 
-.ntf-oprts {display:none}
-tr.pl:hover .ntf-oprts {display:block; position:absolute; top:0; right:0; z-index:2; background:#fff}
+.ntf-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#eee}
+tr.pl:hover .ntf-oprts {display:block}
   /*tr.pl .ntf-oprts:hover {background:#eee; color:#333}*/
   
   .ntf-oprts a {padding:3px 10px}
   .ntf-oprts .ntf-hide {display:none}
+  tr.pl.on .ntf-oprts {display:block}
   tr.pl.on .ntf-preview {display:none}
   tr.pl.on .ntf-hide {display:inline}
   
-  tr.ntf-preview {display:none}
+  tr.ntf-preview {display:none; background:#eee}
