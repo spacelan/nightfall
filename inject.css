@@ -8,9 +8,15 @@ tr.pl:hover .ntf-oprts {display:block}
   /*tr.pl .ntf-oprts:hover {background:#eee; color:#333}*/
   
   .ntf-oprts a {padding:3px 10px}
-  .ntf-oprts .ntf-hide {display:none}
+  .ntf-oprts .ntf-hide,
+  .ntf-oprts .ntf-enter {display:none}
   tr.pl.on .ntf-oprts {display:block}
   tr.pl.on .ntf-preview {display:none}
-  tr.pl.on .ntf-hide {display:inline}
+  tr.pl.on .ntf-hide,
+  tr.pl.on .ntf-enter {display:inline}
   
   tr.ntf-preview {display:none; background:#eee}
+    .ntf-preview.ntf-empty {padding:5px; color:#999; text-align:center}
+  
+.zbar .on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
+  .zbar .on:hover {color:#666}  
