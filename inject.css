@@ -1,4 +1,7 @@
 @CHARSET "UTF-8";
+
+.ntf-empty {padding:5px; color:#999; text-align:center}
+
 table.olt,
 table.olt tr.pl,
 table.olt tr.pl td {position:relative}
@@ -16,7 +19,7 @@ tr.pl:hover .ntf-oprts {display:block}
   tr.pl.on .ntf-enter {display:inline}
   
   tr.ntf-preview {display:none; background:#eee}
-    .ntf-preview.ntf-empty {padding:5px; color:#999; text-align:center}
+    
   
 .zbar .on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
   .zbar .on:hover {color:#666}  

@@ -108,58 +108,109 @@
   // ----------------------
   var $tabNav = $('.zbar>div'),
     $pgMain = $topicLs.closest('.indent'),
-    $memberLs = $('<div id="ntf-memberLs">'),
+    $memberContainer = $('<div id="ntf-memberLs" class="ntf-empty">loading</div>'),
+    $memberLs = false,
     $memberTabHandler = $tabNav.find('a:first').clone().
       attr('href','javascript:void(0)').attr('id','#ntf-memberTabHandler').text('Members').
       appendTo($tabNav),
     $topicTabHandler = $memberTabHandler.clone().
       addClass('on').attr('id','#ntf-topicTabHandler').text('Topics').
-      replaceAll($tabNav.find('.now'));
+      replaceAll($tabNav.find('.now')),
+    members = [],
+    $userLiTpl = false;
       
   //function     
+  
+  function loadMemberLs()
+  {
+    $('<div />').load('/contacts/list .user-list', function()
+    {
+      $memberLs = $(this).find('.user-list');      
+      $userLiTpl = $memberLs.find('li:first').detach();
+      
+      $userLiTpl.find('.ban').remove();
+      
+      $memberLs.empty().appendTo($memberContainer.empty());
+      $memberContainer.removeClass('ntf-empty');
+      
+      $('<div />').load('/group/mine .indent:last', function()
+      {
+        $.each($(this).find('dl'), function(idx, groupLi)
+        {
+          var $groupLi = $(groupLi),
+            groupName = $groupLi.find('dd a').text();
+          
+          $('<div />').load( $(groupLi).find('a:first').attr('href')+'members .obss:last', function()
+          {
+            $.each($(this).find('dl'), function(idx, memberLi)
+            {
+              var $memberLi = $(this),
+                href = $memberLi.find('a:first').attr('href');
+              
+              addMember({
+                "uid" : extractUid(href),
+                "username" : $memberLi.find('dd a').text(),
+                "href" : href,
+                "avatarUri" : $memberLi.find('img').attr('src'),
+                "groupName" : groupName,
+                "place" : $memberLi.find('dd span').text()
+              });
+            });
+          });
+        });
+      });
+    });
+  }
+  
+  function extractUid(uri)
+  {
+    return uri.slice(29, -1);
+  }
+  
+  function addMember(data)
+  { console.log(data);
+    if(-1 === $.inArray(data.uid, members))
+    {
+      var $memberLi = $userLiTpl.clone();
+      
+      $memberLi.find('a').attr('href', data.href).
+        end().find('img').attr('src', data.avatarUri).
+        end().find('h3').text(data.username).
+        end().find('.info p:first').text(data.groupName).
+        end().find('.info p:last').text(data.place).
+        end().attr('id', data.uid);
+        
+      $memberLi.appendTo($memberLs);
+      
+      members.push(data.uid);
+    }
+    else
+    {
+      var $memberLi = $memberLs.find('#'+data.uid),
+        $groups = $memberLi.find('.info p:first');
+        
+      $groups.text($groups.text()+', '+data.groupName);
+    }
+  }
       
   $memberTabHandler.click(function()
   {    
     $topicLs.detach();
-    $memberLs.appendTo($pgMain);
+    $memberContainer.appendTo($pgMain);
     $memberTabHandler.addClass('on');
     $topicTabHandler.removeClass('on');
+    
+    if($memberContainer.hasClass('ntf-empty'))
+    {
+      loadMemberLs();
+    }
   });    
   
   $topicTabHandler.click(function()
   {
-    $memberLs.detach();
+    $memberContainer.detach();
     $topicLs.appendTo($pgMain);
     $topicTabHandler.addClass('on');
     $memberTabHandler.removeClass('on');
-  });
-  return;
-  var members = [],
-    $userLiTpl;
-  
-  $('<div>').load('/contacts/list .user-list', function()
-  {
-    var $t = $(this);
-    $userLiTpl = $t.find('li:first');
-    $t.empty().appendTo($memberLs);
-  });
-  
-  $('<div />').load('/group/mine .indent:last', function()
-  {
-    $.each($(this).find('dl'), function(idx, groupLi)
-    {
-      $('<div />').load( $(groupLi).find('a:first').attr('href')+'members .obss:last', function()
-      {
-        $.each($(this).find('dl'), function(idx, memberLi)
-        {
-          var href = $(this).find('a:first').attr('href');
-          console.log(href);
-          if(-1 === $.inArray(href, members))
-          {
-            //members.push(href);
-          }
-        });
-      });
-    });
-  });
+  });  
 })(jQuery);
