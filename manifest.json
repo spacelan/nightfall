@@ -1,6 +1,6 @@
 {
   "name": "Nightfall",
-  "version": "0.2.2",
+  "version": "0.3",
   "description": "Enhancements for douban group page",
   "background_page": "background.html",
   "content_scripts" : [

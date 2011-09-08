@@ -6,12 +6,20 @@
   var mutedTopics = localStorage['mutedTopics'],
     ignoredUsers = localStorage['ignoredUsers'];
   
-  if(undefined === mutedTopics)
+  if('string' === typeof mutedTopics )
+  {
+    mutedTopics = mutedTopics.split(',');
+  }
+  else
   {
     mutedTopics = [];
   }
   
-  if(undefined === ignoredUsers)
+  if('string' === typeof ignoredUsers)
+  {
+    ignoredUsers = ignoredUsers.split(',');
+  }
+  else
   {
     ignoredUsers = [];
   }
@@ -33,6 +41,25 @@
   function clearMutedTopics()
   {
     localStorage['mutedTopics'] = mutedTopics = [];
+  }
+  
+  function ignoreUser(userId)
+  {
+    if(-1 === $.inArray(userId, ignoredUsers))
+    {
+      ignoredUsers.push(userId);
+      localStorage['ignoredUsers'] = ignoredUsers;
+    }
+  }
+  
+  function getIgnoredUsers()
+  {
+    return ignoredUsers;
+  }
+  
+  function clearIgnoredUsers()
+  {
+    localStorage['ignoredUsers'] = ignoredUsers = [];
   }
     
   chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
@@ -61,14 +88,32 @@
         break;
         
         case 'clearMutedTopics':
-          sendResponse({"done":1});
           clearMutedTopics();
+          sendResponse({"done":1});          
         break;
         
         case 'ignoreUser':
+          if(request.objectId)
+          {
+            sendResponse({"done":1});
+            ignoreUser(request.objectId);
+          }
+          else
+          {
+            sendResponse({"done":0});
+          }
+        break;
+        
+        case 'getIgnoredUsers':
+          sendResponse({
+            "done" : 1,
+            "ignoredUsers" : getIgnoredUsers()
+          });
         break;
         
         case 'clearIgnoredUsers':
+          clearIgnoredUsers();
+          sendResponse({"done":1});          
         break;
       }
     }
