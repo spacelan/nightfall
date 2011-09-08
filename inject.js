@@ -108,57 +108,52 @@
   // ----------------------
   var $tabNav = $('.zbar>div'),
     $pgMain = $topicLs.closest('.indent'),
-    $memberContainer = $('<div id="ntf-memberLs" class="ntf-empty">loading</div>'),
-    $memberLs = false,
+    
     $memberTabHandler = $tabNav.find('a:first').clone().
       attr('href','javascript:void(0)').attr('id','#ntf-memberTabHandler').text('Members').
       appendTo($tabNav),
+      
     $topicTabHandler = $memberTabHandler.clone().
       addClass('on').attr('id','#ntf-topicTabHandler').text('Topics').
       replaceAll($tabNav.find('.now')),
-    members = [],
+    
+    // dom templates
+    $memberTabCtn = $('<div id="ntf-memberCtn" class="ntf-empty">loading</div>'),
+    $groupLiTpl = $('<div class="ntf-groupLi">'+
+        '<div class="hd"><span class="name" /><a>enter</a></div>'+
+        '<div class="bd ntf-empty" />'+
+      '</div>'),
     $userLiTpl = false;
       
-  //function     
+  //function       
   
-  function loadMemberLs()
+  function loadGroupLs()
   {
-    $('<div />').load('/contacts/list .user-list', function()
+    $('<div />').load('/group/mine .indent:last', function()
     {
-      $memberLs = $(this).find('.user-list');      
-      $userLiTpl = $memberLs.find('li:first').detach();
+      $memberTabCtn.empty().removeClass('ntf-empty');
       
-      $userLiTpl.find('.ban').remove();
-      
-      $memberLs.empty().appendTo($memberContainer.empty());
-      $memberContainer.removeClass('ntf-empty');
-      
-      $('<div />').load('/group/mine .indent:last', function()
+      $.each($(this).find('dl'), function(idx, groupLi)
       {
-        $.each($(this).find('dl'), function(idx, groupLi)
-        {
-          var $groupLi = $(groupLi),
-            groupName = $groupLi.find('dd a').text();
-          
-          $('<div />').load( $(groupLi).find('a:first').attr('href')+'members .obss:last', function()
-          {
-            $.each($(this).find('dl'), function(idx, memberLi)
-            {
-              var $memberLi = $(this),
-                href = $memberLi.find('a:first').attr('href');
-              
-              addMember({
-                "uid" : extractUid(href),
-                "username" : $memberLi.find('dd a').text(),
-                "href" : href,
-                "avatarUri" : $memberLi.find('img').attr('src'),
-                "groupName" : groupName,
-                "place" : $memberLi.find('dd span').text()
-              });
-            });
-          });
-        });
+        var $groupLink = $('dd a', this),
+          groupName = $groupLink.text();
+          uri = $groupLink.attr('href');
+        
+        $groupLiTpl.clone().
+          find('.name').text(groupName).
+          end().find('a').attr('href', uri).
+          end().appendTo($memberTabCtn) ;
       });
+    });
+  }
+  
+  function loadMemberLs($ctn, url)
+  {
+    if($ctn.hasClass('ntf-ing')) {return;}
+    
+    $ctn.text('loading...').addClass('ntf-ing ntf-empty').load(url+' .obss:last, .paginator', function()
+    {
+      $ctn.removeClass('ntf-ing ntf-empty');
     });
   }
   
@@ -166,51 +161,51 @@
   {
     return uri.slice(29, -1);
   }
-  
-  function addMember(data)
-  { console.log(data);
-    if(-1 === $.inArray(data.uid, members))
-    {
-      var $memberLi = $userLiTpl.clone();
-      
-      $memberLi.find('a').attr('href', data.href).
-        end().find('img').attr('src', data.avatarUri).
-        end().find('h3').text(data.username).
-        end().find('.info p:first').text(data.groupName).
-        end().find('.info p:last').text(data.place).
-        end().attr('id', data.uid);
-        
-      $memberLi.appendTo($memberLs);
-      
-      members.push(data.uid);
-    }
-    else
-    {
-      var $memberLi = $memberLs.find('#'+data.uid),
-        $groups = $memberLi.find('.info p:first');
-        
-      $groups.text($groups.text()+', '+data.groupName);
-    }
-  }
       
   $memberTabHandler.click(function()
   {    
     $topicLs.detach();
-    $memberContainer.appendTo($pgMain);
+    $memberTabCtn.appendTo($pgMain);
     $memberTabHandler.addClass('on');
     $topicTabHandler.removeClass('on');
     
-    if($memberContainer.hasClass('ntf-empty'))
+    if($memberTabCtn.hasClass('ntf-empty'))
     {
-      loadMemberLs();
+      loadGroupLs();
     }
   });    
   
   $topicTabHandler.click(function()
   {
-    $memberContainer.detach();
+    $memberTabCtn.detach();
     $topicLs.appendTo($pgMain);
     $topicTabHandler.addClass('on');
     $memberTabHandler.removeClass('on');
   });  
+  
+  $memberTabCtn.delegate('.ntf-groupLi .hd', 'click', function()
+  {
+    var $groupLi = $(this).closest('.ntf-groupLi');
+    
+    if($groupLi.hasClass('on'))
+    {
+      $groupLi.removeClass('on').find('.bd').hide();
+    }
+    else
+    {      
+      var $bd = $groupLi.addClass('on').find('.bd').show();
+      if($bd.hasClass('ntf-empty'))
+      {
+        loadMemberLs($bd, $groupLi.find('.hd a').attr('href')+'members');
+      }
+    }
+  }).
+  delegate('.ntf-groupLi .paginator a', 'click', function(e)
+  {
+    e.preventDefault();
+    
+    var $t = $(this);
+    loadMemberLs($t.closest('.bd'), $t.attr('href'));
+  });
+  
 })(jQuery);
