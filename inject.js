@@ -6,7 +6,7 @@
 {
   //  declearing vars and funcs
   // ------------------
-  var blackList = localStorage['snowhs/nightfall'],
+  var mutedTopics = [];
     
     // constants
     
@@ -32,10 +32,12 @@
     
     var id = extractTopicId($li.find('td:first a').attr('href'));
     
-    if(-1 === $.inArray(id, blackList))
+    if(-1 === $.inArray(id, muteTopic))
     {
-      blackList.push(id);
-      localStorage['snowhs/nightfall'] = blackList;
+      chrome.extension.sendRequest({
+        "action" : 'muteTopic',
+        "objectId" : id
+      });
     }
   }
   
@@ -47,62 +49,65 @@
   
   //  let's jean!
   // -------------
-  if('string' === typeof blackList)
-  {
-    blackList = blackList.split(',');
-  }
-  else
-  {
-    blackList = [];
-  }
-  
-  //  process topic list
-  // --------------------
-  $topicLs.find('tr.pl').each(function(idx, el)
-  {
-    var $li = $(this),
-      uri = $li.find('td:first a').attr('href'),
-      id = extractTopicId(uri);
-    
-    if(-1 === $.inArray(id, blackList))
-    {
-      $li.find('td:nth-child(5)').
-        append( $oprtsTpl.clone().find('.ntf-enter').attr('href', uri).end() ).
-        end().after( $previewTpl.clone() );
-    }
-    else
-    {
-      removeTopic($li);
-    }
-  });
-  
-  $topicLs.delegate('.ntf-oprts a', 'click', function()
-  {
-    var $t = $(this),      
-      $li = $t.closest('tr');
-      
-    if($t.hasClass('ntf-mute'))
-    {
-      muteTopic($li);
-    }
-    else if($t.hasClass('ntf-preview'))
-    {
-      var $preview = $li.addClass('on').next('tr.ntf-preview').show('fast');
-      
-      if($preview.hasClass('ntf-empty'))
+  chrome.extension.sendRequest({"action": 'getMutedTopics'},
+    function(response) {
+      if(response.done)
       {
-        $preview.find('td').load($li.find('td:first a').attr('href')+' .topic-content', function()
-        {
-          $(this).find('.topic-opt, .sns-bar').remove();
-          $preview.removeClass('ntf-empty');
-        });
+        mutedTopics = response.mutedTopics;
       }
-    } 
-    else if($t.hasClass('ntf-hide'))
-    {
-      $li.removeClass('on').next('tr.ntf-preview').hide('fast');
-    }       
-  });
+      else
+      {
+        console && console.log('failed to load muted topics');
+      }
+      
+      //  process topic list
+      // --------------------
+      $topicLs.find('tr.pl').each(function(idx, el)
+      {
+        var $li = $(this),
+          uri = $li.find('td:first a').attr('href'),
+          id = extractTopicId(uri);
+        
+        if(-1 === $.inArray(id, mutedTopics))
+        {
+          $li.find('td:nth-child(5)').
+            append( $oprtsTpl.clone().find('.ntf-enter').attr('href', uri).end() ).
+            end().after( $previewTpl.clone() );
+        }
+        else
+        {
+          removeTopic($li);
+        }
+      });
+      
+      $topicLs.delegate('.ntf-oprts a', 'click', function()
+      {
+        var $t = $(this),      
+          $li = $t.closest('tr');
+          
+        if($t.hasClass('ntf-mute'))
+        {
+          muteTopic($li);
+        }
+        else if($t.hasClass('ntf-preview'))
+        {
+          var $preview = $li.addClass('on').next('tr.ntf-preview').show('fast');
+          
+          if($preview.hasClass('ntf-empty'))
+          {
+            $preview.find('td').load($li.find('td:first a').attr('href')+' .topic-content', function()
+            {
+              $(this).find('.topic-opt, .sns-bar').remove();
+              $preview.removeClass('ntf-empty');
+            });
+          }
+        } 
+        else if($t.hasClass('ntf-hide'))
+        {
+          $li.removeClass('on').next('tr.ntf-preview').hide('fast');
+        }       
+      });
+    });
   
   // inject new member tab
   // ----------------------

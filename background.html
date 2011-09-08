@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="jquery.min.js"></script>
+<script>
+  var mutedTopics = localStorage['mutedTopics'],
+    ignoredUsers = localStorage['ignoredUsers'];
+  
+  if(undefined === mutedTopics)
+  {
+    mutedTopics = [];
+  }
+  
+  if(undefined === ignoredUsers)
+  {
+    ignoredUsers = [];
+  }
+  
+  function muteTopic(topicId)
+  {
+    if(-1 === $.inArray(topicId, mutedTopics))
+    {
+      mutedTopics.push(topicId);
+      localStorage['mutedTopics'] = mutedTopics;
+    }
+  }
+  
+  function getMutedTopics()
+  {
+    return mutedTopics;
+  }
+  
+  function clearMutedTopics()
+  {
+    localStorage['mutedTopics'] = mutedTopics = [];
+  }
+    
+  chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
+  {
+    if(request.action)
+    {
+      switch(request.action)
+      {
+        case 'muteTopic':
+          if(request.objectId)
+          {
+            sendResponse({"done":1});
+            muteTopic(request.objectId);
+          }
+          else
+          {
+            sendResponse({"done":0});
+          }
+        break;
+        
+        case 'getMutedTopics':
+          sendResponse({
+            "done" : 1,
+            "mutedTopics" : getMutedTopics()
+          });
+        break;
+        
+        case 'clearMutedTopics':
+          sendResponse({"done":1});
+          clearMutedTopics();
+        break;
+        
+        case 'ignoreUser':
+        break;
+        
+        case 'clearIgnoredUsers':
+        break;
+      }
+    }
+    else
+    {
+      sendResponse({"done":0});
+    }
+  });
+</script>
+</head>
+</html>
