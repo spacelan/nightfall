@@ -14,8 +14,7 @@
     $topicLs = $('.olt'),
     
     // dom templates 
-    $oprtsTpl = $('<div class="ntf-oprts"><a class="ntf-preview" href="javascript:void(0)">preview</a>'+
-      '<a class="ntf-enter" href="javascript:void(0)">enter</a>'+
+    $oprtsTpl = $('<div class="ntf-oprts"><a class="ntf-preview" href="javascript:void(0)">preview</a>'+      
       '<a class="ntf-hide" href="javascript:void(0)">hide</a>'+
       '<a class="ntf-mute" href="javascript:void(0)">mute</a></div>'),
     $previewTpl = $('<tr class="ntf-preview ntf-empty"><td colspan="5">loading...</td></tr>');
@@ -71,8 +70,7 @@
         if(-1 === $.inArray(id, mutedTopics))
         {
           $li.find('td:nth-child(5)').
-            append( $oprtsTpl.clone().find('.ntf-enter').attr('href', uri).end() ).
-            end().after( $previewTpl.clone() );
+            append( $oprtsTpl.clone() ).end().after( $previewTpl.clone() );
         }
         else
         {

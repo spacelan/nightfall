@@ -6,7 +6,7 @@
   "content_scripts" : [
     {
       "matches" : [
-        "http://www.douban.com/group/"
+        "http://www.douban.com/group/*"
       ],
       "css" : ["inject.css"],
       "js" : ["jquery.min.js", "inject.js"],
