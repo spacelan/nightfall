@@ -1,12 +1,13 @@
 {
   "name": "Nightfall",
-  "version": "0.3",
-  "description": "Enhancements for douban group page",
+  "version": "0.3.1",
+  "description": "\"我的小组\"页面的一系列增强",
   "background_page": "background.html",
   "content_scripts" : [
     {
       "matches" : [
-        "http://www.douban.com/group/*"
+        "http://www.douban.com/group/",
+        "http://www.douban.com/group/?start=*"
       ],
       "css" : ["inject.css"],
       "js" : ["jquery.min.js", "inject.js"],

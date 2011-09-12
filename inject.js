@@ -1,10 +1,13 @@
-/*
+/**
+ * content scripts
  * 
+ * @author : snow@firebloom.cc
+ * @license : GPLv3
  */
 
 (function($)
 {
-  //  declearing vars and funcs
+  // mod topic list
   // ------------------
   var mutedTopics = [];
     
