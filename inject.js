@@ -7,6 +7,10 @@
 
 (function($)
 {
+  // show page action
+  // ------------------
+  chrome.extension.sendRequest({"action" : 'showPgAct'});
+  
   // mod topic list
   // ------------------
   var mutedTopics = [];

@@ -73,6 +73,11 @@
     {
       switch(request.action)
       {
+        case 'showPgAct':
+          chrome.pageAction.show(sender.tab.id);
+          sendResponse();
+        break;
+        
         case 'muteTopic':
           if(request.objectId)
           {
