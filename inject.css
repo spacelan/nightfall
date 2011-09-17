@@ -24,9 +24,9 @@ tr.pl:hover .ntf-oprts {display:block}
 .zbar .on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
   .zbar .on:hover {color:#666}  
   
-.ntf-groupLi .hd {padding:0 10px; height:30px; line-height:30px;}
+.ntf-groupLi .hd {padding-left:10px; height:30px; line-height:30px;}
   .ntf-groupLi .hd:hover {background:#ddd; cursor:pointer}
-  .ntf-groupLi .hd a {float:right; padding:0 20px}
+  .ntf-groupLi .hd a {float:left; padding:0 20px}
   
 .ntf-groupLi .bd {display:none; padding:10px}
 

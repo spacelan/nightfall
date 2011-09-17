@@ -130,7 +130,7 @@
     // dom templates
     $memberTabCtn = $('<div id="ntf-memberCtn" class="ntf-empty">loading</div>'),
     $groupLiTpl = $('<div class="ntf-groupLi">'+
-        '<div class="hd"><span class="name" /><a>enter</a></div>'+
+        '<div class="hd"><a target="_blank" /></div>'+
         '<div class="bd ntf-empty" />'+
       '</div>'),
     $userLiTpl = false;
@@ -150,8 +150,7 @@
           uri = $groupLink.attr('href');
         
         $groupLiTpl.clone().
-          find('.name').text(groupName).
-          end().find('a').attr('href', uri).
+          find('a').text(groupName).attr('href', uri).
           end().appendTo($memberTabCtn) ;
       });
     });
@@ -193,8 +192,11 @@
     $memberTabHandler.removeClass('on');
   });  
   
-  $memberTabCtn.delegate('.ntf-groupLi .hd', 'click', function()
+  $memberTabCtn.delegate('.ntf-groupLi .hd', 'click', function(e)
   {
+    // avoid toggle by clicking the "enter" link 
+    if($(e.target).is('a')) {return};
+    
     var $groupLi = $(this).closest('.ntf-groupLi');
     
     if($groupLi.hasClass('on'))
