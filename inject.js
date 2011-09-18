@@ -78,9 +78,12 @@
   // bind event handlers of topic ls
   $topicLs.delegate('tr.pl', 'expand', function()
   {
-    var $t = $(this);
-    var $preview = $t.addClass('n-on').next('tr.n-preview').show('fast');
-    $t.trigger('tweakScroll');
+    var $t = $(this),
+      $preview = $t.next('tr.n-preview');
+    
+    $t.siblings('.n-on').trigger('collapse').
+      end().addClass('n-on').trigger('tweakScroll');
+    $preview.show('fast');
           
     if($preview.hasClass('n-empty'))
     {
