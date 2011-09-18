@@ -391,7 +391,15 @@
     // avoid toggle by clicking the "enter" link 
     if($(e.target).is('a')) {return};
     
-    $(this).closest('.n-groupLi').trigger('toggle');
+    var $t = $(this).closest('.n-groupLi');
+    
+    if(!$t.hasClass('n-cur'))
+    {
+      $memberTabCtn.find('.n-cur').removeClass('n-cur');
+      $t.addClass('n-cur');
+    }
+    
+    $t.trigger('toggle');
   }).
   delegate('.n-groupLi .paginator a', 'click', function(e)
   {
