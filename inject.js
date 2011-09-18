@@ -20,10 +20,25 @@
     // dom elements
     $topicLs = $('.olt'),
     $topicPaginator = $('.paginator'),
-    $lsOperations = $('<div class="n-lsOprts">'+
-        '<a class="f5" href="javascript:void(0)">f5</a>'+
-        '<a class="unmute" href="javascript:void(0)">restore muted</a>'+
-      '</div>' ).insertAfter($topicPaginator),
+    $restoreMuted = $('<a class="unmute" href="javascript:void(0)">'+
+      'restore muted</a>').appendTo($('.aside')).click(function()
+      {
+        if(confirm('This will release all muted topics, sure?'))
+        {
+          chrome.extension.sendRequest({"action" : 'clearMutedTopics'},
+            function(response)
+            {
+              if(response.done)
+              {
+                location.reload();
+              }
+              else
+              {
+                console && console.log('failed to clear muted topics');
+              }
+            });
+        }
+      }),
     
     // dom templates 
     $oprtsTpl = $('<div class="n-oprts">'+
