@@ -9,14 +9,14 @@ table.olt,
 table.olt tr.pl,
 table.olt tr.pl td {position:relative}
 
-.n-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#eee}
+.n-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#F1F1F1}
 tr.pl:hover .n-oprts {display:block}
   
-  .n-oprts a {padding:3px 10px}
+  .n-oprts a {padding:5px 10px}
   .n-oprts .n-hide,
   .n-oprts .n-enter {display:none}
   
-  tr.pl.n-cur {background:#eee}
+  tr.pl.n-cur {background:#F1F1F1}
   tr.pl.n-on td {border-bottom:none}
   
   tr.pl.n-on .n-oprts {display:block}
@@ -24,7 +24,7 @@ tr.pl:hover .n-oprts {display:block}
   tr.pl.n-on .n-hide,
   tr.pl.n-on .n-enter {display:inline}
   
-  tr.n-preview {display:none; background:#eee}
+  tr.n-preview {display:none;}
   
 .n-lsOprts .f5 {padding:5px 20px}
 .nft-lsOprts .unmute {padding:5px 20px}
@@ -40,3 +40,7 @@ tr.pl:hover .n-oprts {display:block}
 
 .n-groupLi.n-on,
 .n-groupLi.n-cur {background:#eee}
+
+
+.topic-content {padding:15px 45px 25px 15px; box-shadow:0px 0px 20px rgba(0, 0, 0, 0.2); margin:-3px -30px 0; border:1px #ccc solid;border-radius:4px;}
+.topic-content .topic-doc {float:left; margin:-5px 0 20px 10px; font-size:14px;}
