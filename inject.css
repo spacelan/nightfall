@@ -12,7 +12,7 @@ table.olt tr.pl td {position:relative}
 .n-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#F1F1F1}
 tr.pl:hover .n-oprts {display:block}
   
-  .n-oprts a {padding:5px 10px}
+  .n-oprts a {padding:3px 10px}
   .n-oprts .n-hide,
   .n-oprts .n-enter {display:none}
   
