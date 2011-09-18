@@ -43,4 +43,4 @@ tr.pl:hover .n-oprts {display:block}
 
 
 .topic-content {padding:15px 45px 25px 15px; box-shadow:0px 5px 15px rgba(0, 0, 0, 0.2); margin:-3px -30px 0; border:1px #ccc solid;border-radius:4px;}
-.topic-content .topic-doc {float:left; margin:-5px 0 20px 10px; font-size:14px;}
+.topic-content .topic-doc {float:left; margin:-5px 0 20px 10px; font-size:14px; line-height:22px;}
