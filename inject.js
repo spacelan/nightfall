@@ -159,7 +159,21 @@
   delegate('tr.pl', 'mute', function()
   {
     var $t = $(this),
-      id = extractTopicId($t.find('td:first a').attr('href'));
+      id = extractTopicId($t.find('td:first a').attr('href')),
+      $next = $t.nextAll('tr.pl:first');
+      
+    if($next.length)
+    {
+      $next.addClass('n-cur');
+    }
+    else
+    {
+      $prev = $t.prevAll('tr.pl:first');
+      if($prev.length)
+      {
+        $prev.addClass('n-cur');
+      }
+    }
       
     removeTopic($t);
     
@@ -202,7 +216,7 @@
   });
   
   // keyboard shortcuts
-  $(document).keyup(function(e)
+  $(document).keydown(function(e)
   {
     // u for refresh
     switch(e.which)
@@ -216,8 +230,8 @@
         $('<div />').load('/group/ .olt', function()
         {
           var $t = $(this);
-          processTopicLs($t);
           removeMutedTopics($t);
+          processTopicLs($t);          
           $t.find('tbody').replaceAll($topicLs.find('tbody'));
         });
       break;
@@ -245,9 +259,7 @@
   });
   
   //  let's jean!
-  // -------------
-  processTopicLs($topicLs);
-  
+  // -------------  
   chrome.extension.sendRequest({"action": 'getMutedTopics'},
     function(response)
     {
@@ -261,6 +273,7 @@
       }
       
       removeMutedTopics($topicLs);
+      processTopicLs($topicLs);
     });
   
   // inject new member tab
