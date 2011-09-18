@@ -97,7 +97,7 @@
   delegate('tr.pl', 'collapse', function()
   {
     var $t = $(this);
-    $t.removeClass('n-on').next('tr.n-preview').hide('fast');
+    $t.removeClass('n-on').next('tr.n-preview').hide();
   }).
   delegate('tr.pl', 'toggle', function()
   {
