@@ -1,33 +1,42 @@
 @CHARSET "UTF-8";
 
-.ntf-empty {padding:5px; color:#999; text-align:center}
+/* for better ux when expanding topic or group member list */
+#content {padding-bottom:400px}
+
+.n-empty {padding:5px; color:#999; text-align:center}
 
 table.olt,
 table.olt tr.pl,
 table.olt tr.pl td {position:relative}
 
-.ntf-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#eee}
-tr.pl:hover .ntf-oprts {display:block}
-  /*tr.pl .ntf-oprts:hover {background:#eee; color:#333}*/
+.n-oprts {display:none; position:absolute; bottom:0; right:0; z-index:2; background:#eee}
+tr.pl:hover .n-oprts {display:block}
   
-  .ntf-oprts a {padding:3px 10px}
-  .ntf-oprts .ntf-hide,
-  .ntf-oprts .ntf-enter {display:none}
-  tr.pl.on .ntf-oprts {display:block}
-  tr.pl.on .ntf-preview {display:none}
-  tr.pl.on .ntf-hide,
-  tr.pl.on .ntf-enter {display:inline}
+  .n-oprts a {padding:3px 10px}
+  .n-oprts .n-hide,
+  .n-oprts .n-enter {display:none}
   
-  tr.ntf-preview {display:none; background:#eee}
+  tr.pl.n-cur {background:#eee}
+  tr.pl.n-on td {border-bottom:none}
+  
+  tr.pl.n-on .n-oprts {display:block}
+  tr.pl.n-on .n-preview {display:none}
+  tr.pl.n-on .n-hide,
+  tr.pl.n-on .n-enter {display:inline}
+  
+  tr.n-preview {display:none; background:#eee}
+  
+.n-lsOprts .f5 {padding:5px 20px}
+.nft-lsOprts .unmute {padding:5px 20px}
+  
+.zbar .n-on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
+  .zbar .n-on:hover {color:#666}  
     
+.n-groupLi .hd {padding-left:10px; height:30px; line-height:30px;}
+  .n-groupLi .hd:hover {background:#ddd; cursor:pointer}
+  .n-groupLi .hd a {float:left; padding:0 20px}
   
-.zbar .on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
-  .zbar .on:hover {color:#666}  
-  
-.ntf-groupLi .hd {padding-left:10px; height:30px; line-height:30px;}
-  .ntf-groupLi .hd:hover {background:#ddd; cursor:pointer}
-  .ntf-groupLi .hd a {float:left; padding:0 20px}
-  
-.ntf-groupLi .bd {display:none; padding:10px}
+.n-groupLi .bd {display:none; padding:10px}
 
-.ntf-groupLi.on {background:#eee}
+.n-groupLi.n-on,
+.n-groupLi.n-cur {background:#eee}
