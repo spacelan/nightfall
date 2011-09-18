@@ -165,6 +165,7 @@
     
     if(-1 === $.inArray(id, mutedTopics))
     {
+      mutedTopics.push(id);
       chrome.extension.sendRequest({
         "action" : 'muteTopic',
         "objectId" : id
@@ -216,6 +217,7 @@
         {
           var $t = $(this);
           processTopicLs($t);
+          removeMutedTopics($t);
           $t.find('tbody').replaceAll($topicLs.find('tbody'));
         });
       break;
@@ -244,6 +246,8 @@
   
   //  let's jean!
   // -------------
+  processTopicLs($topicLs);
+  
   chrome.extension.sendRequest({"action": 'getMutedTopics'},
     function(response)
     {
@@ -256,9 +260,6 @@
         console && console.log('failed to load muted topics');
       }
       
-      //  process topic list
-      // --------------------
-      processTopicLs($topicLs);
       removeMutedTopics($topicLs);
     });
   
