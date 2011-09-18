@@ -1,6 +1,6 @@
 {
   "name": "Nightfall",
-  "version": "0.5.3",
+  "version": "0.5.4",
   "description": "豆瓣\"我的小组\"页面的一系列增强",
   "background_page": "background.html",
   "content_scripts" : [
