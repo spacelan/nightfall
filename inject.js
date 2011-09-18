@@ -45,7 +45,8 @@
       '<a class="n-preview" href="javascript:void(0)">preview</a>'+      
       '<a class="n-hide" href="javascript:void(0)">hide</a>'+
       '<a class="n-mute" href="javascript:void(0)">mute</a></div>'),
-    $previewTpl = $('<tr class="n-preview n-empty"><td colspan="5">loading...</td></tr>'),
+    $previewTpl = $('<tr class="n-preview n-empty"><td colspan="5">'+
+      '<div class="n-ctn n-box">loading...</div></td></tr>'),
     $lsLoadingTpl = $('<tr class="n-lsLoading n-empty"><td colspan="5">loading</td></tr>');
   
   
@@ -102,9 +103,10 @@
           
     if($preview.hasClass('n-empty'))
     {
-      $preview.find('td').load($t.find('td:first a').attr('href')+' .topic-content', function()
+      $preview.find('.n-ctn').load($t.find('td:first a').attr('href')+
+        ' .topic-content, .topic-reply', function()
       {
-        $(this).find('.topic-opt, .sns-bar').remove();
+        $(this).find('.topic-opt, .sns-bar, .topic-reply li:gt(4)').remove();
         $preview.removeClass('n-empty');
       });
     }
@@ -293,7 +295,7 @@
     $memberTabCtn = $('<div id="n-memberCtn" class="n-empty">loading</div>'),
     $groupLiTpl = $('<div class="n-groupLi">'+
         '<div class="hd"><a target="_blank" /></div>'+
-        '<div class="bd n-empty" />'+
+        '<div class="bd n-box n-empty" />'+
       '</div>'),
     $userLiTpl = false;
       
