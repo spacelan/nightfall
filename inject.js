@@ -350,7 +350,9 @@
     var $t = $(this),
       $bd = $t.addClass('n-on').find('.bd').show();
       
+    $t.siblings('.n-on').trigger('collapse');      
     $t.trigger('tweakScroll');
+    
     if($bd.hasClass('n-empty'))
     {
       loadMemberLs($bd, $t.find('.hd a').attr('href')+'members');
