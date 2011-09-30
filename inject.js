@@ -164,16 +164,19 @@
       id = extractTopicId($t.find('td:first a').attr('href')),
       $next = $t.nextAll('tr.pl:first');
       
-    if($next.length)
+    if($t.hasClass('n-cur'))
     {
-      $next.addClass('n-cur');
-    }
-    else
-    {
-      $prev = $t.prevAll('tr.pl:first');
-      if($prev.length)
+      if($next.length)
       {
-        $prev.addClass('n-cur');
+        $next.addClass('n-cur');
+      }
+      else
+      {
+        $prev = $t.prevAll('tr.pl:first');
+        if($prev.length)
+        {
+          $prev.addClass('n-cur');
+        }
       }
     }
       
