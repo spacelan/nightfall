@@ -13,7 +13,8 @@
   
   // mod topic list
   // ------------------
-  var mutedTopics = [];
+  var mutedTopics = [],
+    blockedUsers = [];
     
     // constants
     
@@ -25,7 +26,7 @@
       {
         if(confirm('This will release all muted topics, sure?'))
         {
-          chrome.extension.sendRequest({"action" : 'clearMutedTopics'},
+          chrome.extension.sendRequest({"action" : 'clearData'},
             function(response)
             {
               if(response.done)
@@ -44,7 +45,9 @@
     $oprtsTpl = $('<div class="n-oprts">'+
       '<a class="n-preview" href="javascript:void(0)">preview</a>'+      
       '<a class="n-hide" href="javascript:void(0)">hide</a>'+
-      '<a class="n-mute" href="javascript:void(0)">mute</a></div>'),
+      '<a class="n-mute" href="javascript:void(0)">mute</a>'+
+      '<a class="n-block" href="javascript:void(0)">block</a>'+
+      '</div>'),
     $previewTpl = $('<tr class="n-preview n-empty"><td colspan="5">'+
       '<div class="n-ctn n-box">loading...</div></td></tr>'),
     $lsLoadingTpl = $('<tr class="n-lsLoading n-empty"><td colspan="5">loading</td></tr>');
@@ -89,6 +92,15 @@
   {
     $li.next('tr.n-preview').remove();
     $li.remove();        
+  }
+  
+  function removeTopicsByAuthor(user)
+  {
+    $author = $topicLs.find('td:nth-child(3):contains("'+user+'")');
+    $.each($author, function(idx, el)
+    {
+      removeTopic($(el).closest('tr.pl'));
+    })
   }
   
   // bind event handlers of topic ls
@@ -191,6 +203,24 @@
       });
     }
   }).
+  delegate('tr.pl', 'block', function()
+  {
+    var $t = $(this),
+      id = extractTopicId($t.find('td:first a').attr('href')),
+      user = $t.find('td:nth-child(3)').text(),
+      $next = $t.nextAll('tr.pl:first');
+      
+    removeTopicsByAuthor(user);
+    
+    if(-1 === $.inArray(id, blockedUsers))
+    {
+      blockedUsers.push(user);
+      chrome.extension.sendRequest({
+        "action" : 'blockUser',
+        "objectId" : user
+      });
+    }
+  }).
   delegate('.n-oprts .n-preview', 'click', function()
   {
     var $li = $(this).closest('tr');
@@ -218,6 +248,10 @@
   delegate('.n-oprts .n-mute', 'click', function()
   {
     $(this).closest('tr').trigger('mute');
+  }).
+  delegate('.n-oprts .n-block', 'click', function()
+  {
+    $(this).closest('tr').trigger('block');
   });
   
   // keyboard shortcuts
@@ -238,6 +272,11 @@
           removeMutedTopics($t);
           processTopicLs($t);          
           $t.find('tbody').replaceAll($topicLs.find('tbody'));
+          $.each(blockedUsers, function(idx, user)
+          {
+            removeTopicsByAuthor(user);
+          });
+          $topicLs.find('.n-cur').trigger('tweakScroll');
         });
       break;
       
@@ -260,27 +299,39 @@
       case 77:
         $('.n-cur').trigger('mute');
       break;
+      
+      // b for block li author
+      case 66:
+        $('.n-cur').trigger('block');
+      break;
     }    
   });
   
   //  let's jean!
   // -------------  
-  chrome.extension.sendRequest({"action": 'getMutedTopics'},
+  chrome.extension.sendRequest({"action": 'getData'},
     function(response)
     {
       if(response.done)
       {
         mutedTopics = response.mutedTopics;
+        blockedUsers = response.blockedUsers;
       }
       else
       {
         console && console.log('failed to load muted topics');
       }
       
+      $.each(blockedUsers, function(idx, user)
+      {
+        removeTopicsByAuthor(user);
+      });
+      
       removeMutedTopics($topicLs);
       processTopicLs($topicLs);
-    });
-  
+    }); 
+    
+    
   // inject new member tab
   // ----------------------
   var $tabNav = $('.zbar>div'),

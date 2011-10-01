@@ -9,7 +9,7 @@
  * @license : GPLv3
  */
   var mutedTopics = localStorage['mutedTopics'],
-    ignoredUsers = localStorage['ignoredUsers'];
+    blockedUsers = localStorage['blockedUsers'];
   
   if('string' === typeof mutedTopics )
   {
@@ -20,51 +20,13 @@
     mutedTopics = [];
   }
   
-  if('string' === typeof ignoredUsers)
+  if('string' === typeof blockedUsers)
   {
-    ignoredUsers = ignoredUsers.split(',');
+    blockedUsers = blockedUsers.split(',');
   }
   else
   {
-    ignoredUsers = [];
-  }
-  
-  function muteTopic(topicId)
-  {
-    if(-1 === $.inArray(topicId, mutedTopics))
-    {
-      mutedTopics.push(topicId);
-      localStorage['mutedTopics'] = mutedTopics;
-    }
-  }
-  
-  function getMutedTopics()
-  {
-    return mutedTopics;
-  }
-  
-  function clearMutedTopics()
-  {
-    localStorage['mutedTopics'] = mutedTopics = [];
-  }
-  
-  function ignoreUser(userId)
-  {
-    if(-1 === $.inArray(userId, ignoredUsers))
-    {
-      ignoredUsers.push(userId);
-      localStorage['ignoredUsers'] = ignoredUsers;
-    }
-  }
-  
-  function getIgnoredUsers()
-  {
-    return ignoredUsers;
-  }
-  
-  function clearIgnoredUsers()
-  {
-    localStorage['ignoredUsers'] = ignoredUsers = [];
+    blockedUsers = [];
   }
     
   chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
@@ -82,7 +44,12 @@
           if(request.objectId)
           {
             sendResponse({"done":1});
-            muteTopic(request.objectId);
+            
+            if(-1 === $.inArray(request.objectId, mutedTopics))
+            {
+              mutedTopics.push(request.objectId);
+              localStorage['mutedTopics'] = mutedTopics;
+            }
           }
           else
           {
@@ -90,23 +57,16 @@
           }
         break;
         
-        case 'getMutedTopics':
-          sendResponse({
-            "done" : 1,
-            "mutedTopics" : getMutedTopics()
-          });
-        break;
-        
-        case 'clearMutedTopics':
-          clearMutedTopics();
-          sendResponse({"done":1});          
-        break;
-        
-        case 'ignoreUser':
+        case 'blockUser':
           if(request.objectId)
           {
             sendResponse({"done":1});
-            ignoreUser(request.objectId);
+            
+            if(-1 === $.inArray(request.objectId, blockedUsers))
+            {
+              blockedUsers.push(request.objectId);
+              localStorage['blockedUsers'] = blockedUsers;
+            }
           }
           else
           {
@@ -114,15 +74,17 @@
           }
         break;
         
-        case 'getIgnoredUsers':
+        case 'getData':
           sendResponse({
             "done" : 1,
-            "ignoredUsers" : getIgnoredUsers()
+            "mutedTopics" : mutedTopics,
+            "blockedUsers" : blockedUsers
           });
         break;
         
-        case 'clearIgnoredUsers':
-          clearIgnoredUsers();
+        case 'clearData':
+          localStorage['mutedTopics'] = mutedTopics = [];
+          localStorage['blockedUsers'] = blockedUsers = [];
           sendResponse({"done":1});          
         break;
       }
