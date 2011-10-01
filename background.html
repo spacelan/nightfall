@@ -22,7 +22,15 @@
   
   if('string' === typeof blockedUsers)
   {
-    blockedUsers = blockedUsers.split(',');
+    tmp = blockedUsers.split(',');
+    blockedUsers = [];
+    $.each(tmp, function(idx, el)
+    {
+      if(el.length > 0)
+      {
+        blockedUsers.push(el);
+      }
+    });
   }
   else
   {
