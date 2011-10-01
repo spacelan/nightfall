@@ -1,6 +1,6 @@
 /**
  * content scripts
- * 
+ *
  * @author : snow@firebloom.cc
  * @license : GPLv3
  */
@@ -10,14 +10,14 @@
   // show page action
   // ------------------
   chrome.extension.sendRequest({"action" : 'showPgAct'});
-  
+
   // mod topic list
   // ------------------
   var mutedTopics = [],
     blockedUsers = [];
-    
+
     // constants
-    
+
     // dom elements
     $tabNav = $('.zbar>div'),
     $topicLs = $('.olt'),
@@ -25,16 +25,16 @@
     $topicPaginator = $('.paginator'),
     $restoreMuted = $('<a class="unmute" href="javascript:void(0)">'+
       'restore muted</a>'),
-      
+
     $memberTabHandler = $tabNav.find('a:first').clone().
       attr('href','javascript:void(0)').
-      attr('id','#n-memberTabHandler').text('Members'),      
+      attr('id','#n-memberTabHandler').text('Members'),
     $topicTabHandler = $memberTabHandler.clone().
       addClass('n-on').attr('id','#n-topicTabHandler').text('Topics'),
-    
-    // dom templates 
+
+    // dom templates
     $oprtsTpl = $('<div class="n-oprts">'+
-      '<a class="n-preview" href="javascript:void(0)">preview</a>'+      
+      '<a class="n-preview" href="javascript:void(0)">preview</a>'+
       '<a class="n-hide" href="javascript:void(0)">hide</a>'+
       '<a class="n-mute" href="javascript:void(0)">mute</a>'+
       '<a class="n-block" href="javascript:void(0)">block</a>'+
@@ -43,32 +43,32 @@
       '<div class="n-ctn n-box">loading...</div></td></tr>'),
     $lsLoadingTpl = $('<tr class="n-lsLoading n-empty">'+
       '<td colspan="5">loading</td></tr>'),
-    
+
     $memberTabCtn = $('<div id="n-memberCtn" class="n-empty">loading</div>'),
     $groupLiTpl = $('<div class="n-groupLi">'+
         '<div class="hd"><a target="_blank" /></div>'+
         '<div class="bd n-box n-empty" />'+
       '</div>');
-  
-  
+
+
   function extractTopicId(uri)
   {
     return uri.slice(34, -1);
   }
-  
+
   function processTopicLs($container)
   {
     $.each(blockedUsers, function(idx, user)
     {
       removeTopicsByAuthor(user, $container);
     });
-    
+
     $container.find('tr.pl').each(function(idx, el)
     {
       var $li = $(this),
         uri = $li.find('td:first a').attr('href'),
         id = extractTopicId(uri);
-      
+
       if(-1 < $.inArray(id, mutedTopics))
       {
         removeTopic($li);
@@ -79,19 +79,19 @@
           end().after($previewTpl.clone());
       }
     });
-    
+
     $container.find('tr.pl:first').addClass('n-cur');
   }
-  
+
   /**
    * remove li from topic ls dom
    */
   function removeTopic($li)
   {
     $li.next('tr.n-preview').remove();
-    $li.remove();        
+    $li.remove();
   }
-  
+
   function removeTopicsByAuthor(user, $container)
   {
     $author = $container.find('td:nth-child(3):contains("'+user+'")');
@@ -100,16 +100,16 @@
       removeTopic($(el).closest('tr.pl'));
     })
   }
-  
+
   function expandTopic()
   {
     var $t = $(this),
       $preview = $t.next('tr.n-preview');
-    
+
     $t.siblings('.n-on').trigger('collapse').
       end().addClass('n-on').trigger('tweakScroll');
     $preview.show('fast');
-          
+
     if($preview.hasClass('n-empty'))
     {
       $preview.find('.n-ctn').load($t.find('td:first a').attr('href')+
@@ -120,13 +120,13 @@
       });
     }
   }
-  
+
   function collapseTopic()
   {
     var $t = $(this);
     $t.removeClass('n-on').next('tr.n-preview').hide();
   }
-  
+
   function toggleTopic()
   {
     var $t = $(this);
@@ -139,12 +139,12 @@
       $t.trigger('expand');
     }
   }
-  
+
   function nextTopic()
   {
     var $t = $(this),
       $next = $t.nextAll('tr.pl:first');
-      
+
     if($next.length)
     {
       $t.removeClass('n-cur');
@@ -152,12 +152,12 @@
       $next.trigger('tweakScroll');
     }
   }
-  
+
   function prevTopic()
   {
     var $t = $(this),
       $prev = $t.prevAll('tr.pl:first');
-      
+
     if($prev.length)
     {
       $t.removeClass('n-cur');
@@ -165,20 +165,20 @@
       $prev.trigger('tweakScroll');
     }
   }
-  
+
   function tweakTopicScroll()
   {
     var $t = $(this);
-      
+
     $(document).scrollTop($t.offset().top-100);
   }
-  
+
   function muteTopic()
   {
     var $t = $(this),
       id = extractTopicId($t.find('td:first a').attr('href')),
       $next = $t.nextAll('tr.pl:first');
-      
+
     if($t.hasClass('n-cur'))
     {
       if($next.length)
@@ -194,9 +194,9 @@
         }
       }
     }
-      
+
     removeTopic($t);
-    
+
     if(-1 === $.inArray(id, mutedTopics))
     {
       mutedTopics.push(id);
@@ -206,16 +206,16 @@
       });
     }
   }
-  
+
   function blockUser()
   {
     var $t = $(this),
       id = extractTopicId($t.find('td:first a').attr('href')),
       user = $t.find('td:nth-child(3)').text(),
       $next = $t.nextAll('tr.pl:first');
-      
+
     removeTopicsByAuthor(user, $topicLs);
-    
+
     if(-1 === $.inArray(id, blockedUsers))
     {
       blockedUsers.push(user);
@@ -225,12 +225,12 @@
       });
     }
   }
-  
+
   function reloadTopicLs()
   {
     // avoid windfury
     if($topicLs.find('.n-lsLoading.n-empty').length) {return;}
-    
+
     $lsLoadingTpl.clone().appendTo($topicLs.find('tbody').empty());
     $('<div />').load('/group/ .olt', function()
     {
@@ -240,7 +240,7 @@
       $topicLs.find('.n-cur').trigger('tweakScroll');
     });
   }
-  
+
   // bind event handlers of topic ls
   function bindKeyboradShorcut()
   {
@@ -254,35 +254,35 @@
         case 85:
           reloadTopicLs()
         break;
-        
+
         // o for toggle li
         case 79:
           $('.n-cur').trigger('toggle');
         break;
-        
+
         // j for next li
         case 74:
           $('.n-cur').trigger('next');
         break;
-        
-        // k for prev li 
+
+        // k for prev li
         case 75:
           $('.n-cur').trigger('prev');
         break;
-        
+
         // m for mute li
         case 77:
           $('.n-cur').trigger('mute');
         break;
-        
+
         // b for block li author
         case 66:
           $('.n-cur').trigger('block');
         break;
-      }    
+      }
     });
   }
-  
+
   function bindTopicLsHandler()
   {
     $topicLs.delegate('tr.pl', 'expand', expandTopic).
@@ -296,25 +296,25 @@
       delegate('.n-oprts .n-preview', 'click', function()
       {
         var $li = $(this).closest('tr');
-          
+
         if(!$li.hasClass('n-cur'))
         {
           $topicLs.find('.n-cur').removeClass('n-cur');
           $li.addClass('n-cur');
         }
-        
+
         $li.trigger('expand');
       }).
       delegate('.n-oprts .n-hide', 'click', function()
       {
         var $li = $(this).closest('tr');
-          
+
         if(!$li.hasClass('n-cur'))
         {
           $topicLs.find('.n-cur').removeClass('n-cur');
           $li.addClass('n-cur');
         }
-        
+
         $li.trigger('collapse');
       }).
       delegate('.n-oprts .n-mute', 'click', function()
@@ -326,23 +326,23 @@
         $(this).closest('tr').trigger('block');
       });
   }
-  
+
   function bindTabHandler()
   {
     $memberTabHandler.click(function()
-    {    
+    {
       $topicLs.detach();
       $memberTabCtn.appendTo($pgMain);
       $topicPaginator.hide();
       $memberTabHandler.addClass('n-on');
       $topicTabHandler.removeClass('n-on');
-      
+
       if($memberTabCtn.hasClass('n-empty'))
       {
         loadGroupLs();
       }
-    });    
-    
+    });
+
     $topicTabHandler.click(function()
     {
       $memberTabCtn.detach();
@@ -350,9 +350,9 @@
       $topicPaginator.show();
       $topicTabHandler.addClass('n-on');
       $memberTabHandler.removeClass('n-on');
-    }); 
+    });
   }
-  
+
   function bindGroupLsHandler()
   {
     $memberTabCtn.delegate('.n-groupLi', 'expand', expandGroupLi).
@@ -363,84 +363,84 @@
       delegate('.n-groupLi', 'tweakScroll', tweakGroupLiScroll).
       delegate('.n-groupLi .hd', 'click', function(e)
       {
-        // avoid toggle by clicking the "enter" link 
+        // avoid toggle by clicking the "enter" link
         if($(e.target).is('a')) {return};
-        
+
         var $t = $(this).closest('.n-groupLi');
-        
+
         if(!$t.hasClass('n-cur'))
         {
           $memberTabCtn.find('.n-cur').removeClass('n-cur');
           $t.addClass('n-cur');
         }
-        
+
         $t.trigger('toggle');
       }).
       delegate('.n-groupLi .paginator a', 'click', function(e)
       {
         e.preventDefault();
-        
+
         var $t = $(this);
         loadMemberLs($t.closest('.bd'), $t.attr('href'));
       });
   }
-  
+
   function loadGroupLs()
   {
     $('<div />').load('/group/mine .indent:last', function()
     {
       $memberTabCtn.empty().removeClass('n-empty');
-      
+
       $.each($(this).find('dl'), function(idx, groupLi)
       {
         var $groupLink = $('dd a', this),
           groupName = $groupLink.text();
           uri = $groupLink.attr('href');
-        
+
         $groupLiTpl.clone().
           find('a').text(groupName).attr('href', uri).
           end().appendTo($memberTabCtn) ;
       });
-      
+
       $memberTabCtn.find('.n-groupLi:first').addClass('n-cur');
     });
   }
-  
+
   function loadMemberLs($ctn, url)
   {
     if($ctn.hasClass('n-ing')) {return;}
-    
+
     $ctn.text('loading...').addClass('n-ing n-empty').
       load(url+' .obss:last, .paginator', function()
     {
       $ctn.removeClass('n-ing n-empty');
     });
   }
-  
+
   function extractUid(uri)
   {
     return uri.slice(29, -1);
   }
-  
+
   function expandGroupLi()
   {
     var $t = $(this),
       $bd = $t.addClass('n-on').find('.bd').show();
-      
-    $t.siblings('.n-on').trigger('collapse');      
+
+    $t.siblings('.n-on').trigger('collapse');
     $t.trigger('tweakScroll');
-    
+
     if($bd.hasClass('n-empty'))
     {
       loadMemberLs($bd, $t.find('.hd a').attr('href')+'members');
     }
   }
-  
+
   function collapseGroubLi()
   {
     $(this).removeClass('n-on').find('.bd').hide();
   }
-  
+
   function toggleGroupLi()
   {
     var $t = $(this);
@@ -453,12 +453,12 @@
       $t.trigger('expand');
     }
   }
-  
+
   function nextGroupLi()
   {
     var $t = $(this),
       $next = $t.nextAll('.n-groupLi:first');
-      
+
     if($next.length)
     {
       $t.removeClass('n-cur');
@@ -466,12 +466,12 @@
       $next.trigger('tweakScroll');
     }
   }
-  
+
   function prevGroupLi()
   {
     var $t = $(this),
       $prev = $t.prevAll('.n-groupLi:first');
-      
+
     if($prev.length)
     {
       $t.removeClass('n-cur');
@@ -479,16 +479,16 @@
       $prev.trigger('tweakScroll');
     }
   }
-  
+
   function tweakGroupLiScroll()
   {
     var $t = $(this);
-      
+
     $(document).scrollTop($t.offset().top);
   }
-  
+
   //  let's jean!
-  // -------------  
+  // -------------
   chrome.extension.sendRequest({"action": 'getData'},
     function(response)
     {
@@ -501,19 +501,19 @@
       {
         console && console.log('failed to load muted topics');
       }
-      
+
       processTopicLs($topicLs);
       $topicLs.find('.n-cur').trigger('tweakScroll');
-      
+
       bindKeyboradShorcut();
       bindTopicLsHandler();
-      
-      $memberTabHandler.appendTo($tabNav),      
+
+      $memberTabHandler.appendTo($tabNav),
       $topicTabHandler.replaceAll($tabNav.find('.now')),
-      
+
       bindTabHandler();
       bindGroupLsHandler();
-      
+
       $restoreMuted.appendTo($('.aside')).click(function()
       {
         if(confirm('This will release all muted topics, sure?'))
@@ -533,5 +533,5 @@
         }
       })
     });
-    
+
 })(jQuery);

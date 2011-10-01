@@ -12,34 +12,34 @@ table.olt tr.pl td {position:relative}
 .n-oprts {display:none; position:absolute; bottom:0; right:0;
   z-index:2; background:#F1F1F1}
 tr.pl:hover .n-oprts {display:block}
-  
+
   .n-oprts a {padding:3px 10px}
   .n-oprts .n-hide,
   .n-oprts .n-enter {display:none}
-  
+
   tr.pl.n-cur {background:#F1F1F1}
   tr.pl.n-on td {border-bottom:none}
-  
+
   tr.pl.n-on .n-oprts {display:block}
   tr.pl.n-on .n-preview {display:none}
   tr.pl.n-on .n-hide,
   tr.pl.n-on .n-enter {display:inline}
-  
+
   tr.n-preview {display:none;}
-  
+
 .zbar .n-on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
-  .zbar .n-on:hover {color:#666}  
-    
-.n-groupLi .hd {padding-left:10px; height:30px; line-height:30px; 
+  .zbar .n-on:hover {color:#666}
+
+.n-groupLi .hd {padding-left:10px; height:30px; line-height:30px;
   border-bottom:1px dashed #ddd;}
   .n-groupLi .hd:hover {background:#ddd; cursor:pointer}
   .n-groupLi.n-cur .hd {background:#eee}
   .n-groupLi.n-on .hd {border-bottom:none}
   .n-groupLi .hd a {float:left; padding:0 20px}
-  
+
 .n-groupLi .bd {display:none; padding:20px}
 
-.n-box {box-shadow:0px 5px 15px rgba(0, 0, 0, 0.2); margin:0 -30px; 
+.n-box {box-shadow:0px 5px 15px rgba(0, 0, 0, 0.2); margin:0 -30px;
   border:1px #ccc solid; border-radius:4px}
 
 .olt .n-preview td {padding:0}
