@@ -88,6 +88,23 @@
    */
   function removeTopic($li)
   {
+    if($li.hasClass('n-cur'))
+    {
+      var $next = $li.nextAll('tr.pl:first');
+      if($next.length)
+      {
+        $next.addClass('n-cur');
+      }
+      else
+      {
+        $prev = $li.prevAll('tr.pl:first');
+        if($prev.length)
+        {
+          $prev.addClass('n-cur');
+        }
+      }
+    }
+
     $li.next('tr.n-preview').remove();
     $li.remove();
   }
@@ -176,24 +193,7 @@
   function muteTopic()
   {
     var $t = $(this),
-      id = extractTopicId($t.find('td:first a').attr('href')),
-      $next = $t.nextAll('tr.pl:first');
-
-    if($t.hasClass('n-cur'))
-    {
-      if($next.length)
-      {
-        $next.addClass('n-cur');
-      }
-      else
-      {
-        $prev = $t.prevAll('tr.pl:first');
-        if($prev.length)
-        {
-          $prev.addClass('n-cur');
-        }
-      }
-    }
+      id = extractTopicId($t.find('td:first a').attr('href'));
 
     removeTopic($t);
 
