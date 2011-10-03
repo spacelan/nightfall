@@ -34,10 +34,10 @@
 
     // dom templates
     $oprtsTpl = $('<div class="n-oprts">'+
-      '<a class="n-preview" href="javascript:void(0)">preview</a>'+
-      '<a class="n-hide" href="javascript:void(0)">hide</a>'+
-      '<a class="n-mute" href="javascript:void(0)">mute</a>'+
-      '<a class="n-block" href="javascript:void(0)">block</a>'+
+        '<a class="n-preview" href="javascript:void(0)">preview</a>'+
+        '<a class="n-hide" href="javascript:void(0)">hide</a>'+
+        '<a class="n-mute" href="javascript:void(0)">mute</a>'+
+        '<a class="n-block" href="javascript:void(0)">block</a>'+
       '</div>'),
     $previewTpl = $('<tr class="n-preview n-empty"><td colspan="5">'+
       '<div class="n-ctn n-box">loading...</div></td></tr>'),
@@ -46,7 +46,15 @@
 
     $memberTabCtn = $('<div id="n-memberCtn" class="n-empty">loading</div>'),
     $groupLiTpl = $('<div class="n-groupLi">'+
-        '<div class="hd"><a target="_blank" /></div>'+
+        '<div class="hd">'+
+          '<a class="n-subject" target="_blank"/>'+
+          '<div class="n-toggle">'+
+            '<a class="n-expand">+</a>'+
+            '<a class="n-collapse">-</a>'+
+          '</div>'+
+          '<div class="c" />'+
+        '</div>'+
+        '<div class="n-newMembers" />'+
         '<div class="bd n-box n-empty" />'+
       '</div>');
 
@@ -241,6 +249,121 @@
     });
   }
 
+  function loadGroupLs()
+  {
+    $('<div />').load('/group/mine .indent:last', function()
+    {
+      $memberTabCtn.empty().removeClass('n-empty');
+
+      $.each($(this).find('dl'), function(idx, groupLi)
+      {
+        var $groupLink = $('dd a', this),
+          groupName = $groupLink.text();
+          uri = $groupLink.attr('href');
+
+        $groupLiTpl.clone().
+          find('.n-subject').text(groupName).attr('href', uri).
+          end().appendTo($memberTabCtn) ;
+      });
+
+      $memberTabCtn.find('.n-groupLi:first').addClass('n-cur');
+
+      $.each($memberTabCtn.find('.n-groupLi'), function(idx, el)
+      {
+        var $t = $(el),
+        $bd = $t.find('.bd'),
+        url = $t.find('.hd a').attr('href') + 'members';
+
+        setTimeout(function()
+        {
+          loadMemberLs($bd,url);
+        }, 200 * idx);
+      });
+    });
+  }
+
+  function loadMemberLs($ctn, url)
+  {
+    if($ctn.hasClass('n-ing')) {return;}
+
+    $ctn.text('loading...').addClass('n-ing n-empty').
+      load(url+' .obss:last, .paginator', function()
+    {
+      $ctn.removeClass('n-ing n-empty');
+
+      $new = $ctn.prev('.n-newMembers');
+      $ctn.find('dl.obu:lt(14)').clone().appendTo($new);
+      $new.append('<div class="c" />').removeClass('n-empty');
+    });
+  }
+
+  function extractUid(uri)
+  {
+    return uri.slice(29, -1);
+  }
+
+  function expandGroupLi()
+  {
+    var $t = $(this),
+      $bd = $t.addClass('n-on').find('.bd').show().
+        end().find('.n-newMembers').hide();
+
+    $t.siblings('.n-on').trigger('collapse');
+    $t.trigger('tweakScroll');
+  }
+
+  function collapseGroubLi()
+  {
+    $(this).removeClass('n-on').find('.bd').hide().
+      end().find('.n-newMembers').show();
+  }
+
+  function toggleGroupLi()
+  {
+    var $t = $(this);
+    if($t.hasClass('n-on'))
+    {
+      $t.trigger('collapse');
+    }
+    else
+    {
+      $t.trigger('expand');
+    }
+  }
+
+  function nextGroupLi()
+  {
+    var $t = $(this),
+      $next = $t.nextAll('.n-groupLi:first');
+
+    if($next.length)
+    {
+      $t.removeClass('n-cur');
+      $next.addClass('n-cur');
+      $next.trigger('tweakScroll');
+    }
+  }
+
+  function prevGroupLi()
+  {
+    var $t = $(this),
+      $prev = $t.prevAll('.n-groupLi:first');
+
+    if($prev.length)
+    {
+      $t.removeClass('n-cur');
+      $prev.addClass('n-cur');
+      $prev.trigger('tweakScroll');
+    }
+  }
+
+  function tweakGroupLiScroll()
+  {
+    var $t = $(this);
+
+    $(document).scrollTop($t.offset().top);
+  }
+
   // bind event handlers of topic ls
   function bindKeyboradShorcut()
   {
@@ -361,11 +484,8 @@
       delegate('.n-groupLi', 'next', nextGroupLi).
       delegate('.n-groupLi', 'prev', prevGroupLi).
       delegate('.n-groupLi', 'tweakScroll', tweakGroupLiScroll).
-      delegate('.n-groupLi .hd', 'click', function(e)
+      delegate('.n-groupLi .n-toggle', 'click', function(e)
       {
-        // avoid toggle by clicking the "enter" link
-        if($(e.target).is('a')) {return};
-
         var $t = $(this).closest('.n-groupLi');
 
         if(!$t.hasClass('n-cur'))
@@ -383,108 +503,6 @@
         var $t = $(this);
         loadMemberLs($t.closest('.bd'), $t.attr('href'));
       });
-  }
-
-  function loadGroupLs()
-  {
-    $('<div />').load('/group/mine .indent:last', function()
-    {
-      $memberTabCtn.empty().removeClass('n-empty');
-
-      $.each($(this).find('dl'), function(idx, groupLi)
-      {
-        var $groupLink = $('dd a', this),
-          groupName = $groupLink.text();
-          uri = $groupLink.attr('href');
-
-        $groupLiTpl.clone().
-          find('a').text(groupName).attr('href', uri).
-          end().appendTo($memberTabCtn) ;
-      });
-
-      $memberTabCtn.find('.n-groupLi:first').addClass('n-cur');
-    });
-  }
-
-  function loadMemberLs($ctn, url)
-  {
-    if($ctn.hasClass('n-ing')) {return;}
-
-    $ctn.text('loading...').addClass('n-ing n-empty').
-      load(url+' .obss:last, .paginator', function()
-    {
-      $ctn.removeClass('n-ing n-empty');
-    });
-  }
-
-  function extractUid(uri)
-  {
-    return uri.slice(29, -1);
-  }
-
-  function expandGroupLi()
-  {
-    var $t = $(this),
-      $bd = $t.addClass('n-on').find('.bd').show();
-
-    $t.siblings('.n-on').trigger('collapse');
-    $t.trigger('tweakScroll');
-
-    if($bd.hasClass('n-empty'))
-    {
-      loadMemberLs($bd, $t.find('.hd a').attr('href')+'members');
-    }
-  }
-
-  function collapseGroubLi()
-  {
-    $(this).removeClass('n-on').find('.bd').hide();
-  }
-
-  function toggleGroupLi()
-  {
-    var $t = $(this);
-    if($t.hasClass('n-on'))
-    {
-      $t.trigger('collapse');
-    }
-    else
-    {
-      $t.trigger('expand');
-    }
-  }
-
-  function nextGroupLi()
-  {
-    var $t = $(this),
-      $next = $t.nextAll('.n-groupLi:first');
-
-    if($next.length)
-    {
-      $t.removeClass('n-cur');
-      $next.addClass('n-cur');
-      $next.trigger('tweakScroll');
-    }
-  }
-
-  function prevGroupLi()
-  {
-    var $t = $(this),
-      $prev = $t.prevAll('.n-groupLi:first');
-
-    if($prev.length)
-    {
-      $t.removeClass('n-cur');
-      $prev.addClass('n-cur');
-      $prev.trigger('tweakScroll');
-    }
-  }
-
-  function tweakGroupLiScroll()
-  {
-    var $t = $(this);
-
-    $(document).scrollTop($t.offset().top);
   }
 
   //  let's jean!

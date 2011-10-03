@@ -1,7 +1,7 @@
 {
-  "name": "Nightfall",
-  "version": "0.6.1",
-  "description": "豆瓣\"我的小组\"页面的一系列增强",
+  "name": "豆瓣\"我的小组\"增强",
+  "version": "0.7",
+  "description": "给豆瓣\"我的小组\"页面增加ajax刷新、屏蔽帖子、屏蔽用户和小组成员列表功能",
   "background_page": "background.html",
   "content_scripts" : [
     {
@@ -18,7 +18,7 @@
   "page_action" :
   {
     "default_icon" : "icon-19.png",
-    "default_title" : "Nightfall"
+    "default_title" : "豆瓣\"我的小组\"增强"
   },
   "icons" : {
     "48" : "icon-48.png",
