@@ -289,9 +289,13 @@
     $ctn.text('loading...').addClass('n-ing').
       load(url+' .obss:last, .paginator', function()
     {
-      $new = $ctn.prev('.n-newMembers');
-      $ctn.find('dl.obu:lt(14)').clone().appendTo($new);
-      $new.append('<div class="c" />').closest('.n-groupLi').removeClass('n-empty');
+      var $groupLi = $ctn.closest('.n-groupLi');
+      if($groupLi.hasClass('n-empty'))
+      {
+        $ctn.prev('.n-newMembers').append($ctn.find('dl.obu:lt(14)').clone()).
+          append('<div class="c" />');
+        $groupLi.removeClass('n-empty');
+      }
     });
   }
 
