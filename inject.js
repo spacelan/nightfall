@@ -45,7 +45,7 @@
       '<td colspan="5">loading</td></tr>'),
 
     $memberTabCtn = $('<div id="n-memberCtn" class="n-empty">loading</div>'),
-    $groupLiTpl = $('<div class="n-groupLi">'+
+    $groupLiTpl = $('<div class="n-groupLi n-empty">'+
         '<div class="hd">'+
           '<a class="n-subject" target="_blank"/>'+
           '<div class="n-toggle">'+
@@ -55,7 +55,7 @@
           '<div class="c" />'+
         '</div>'+
         '<div class="n-newMembers" />'+
-        '<div class="bd n-box n-empty" />'+
+        '<div class="bd n-box" />'+
       '</div>');
 
 
@@ -277,7 +277,7 @@
         setTimeout(function()
         {
           loadMemberLs($bd,url);
-        }, 200 * idx);
+        }, 100 * idx);
       });
     });
   }
@@ -286,14 +286,12 @@
   {
     if($ctn.hasClass('n-ing')) {return;}
 
-    $ctn.text('loading...').addClass('n-ing n-empty').
+    $ctn.text('loading...').addClass('n-ing').
       load(url+' .obss:last, .paginator', function()
     {
-      $ctn.removeClass('n-ing n-empty');
-
       $new = $ctn.prev('.n-newMembers');
       $ctn.find('dl.obu:lt(14)').clone().appendTo($new);
-      $new.append('<div class="c" />').removeClass('n-empty');
+      $new.append('<div class="c" />').closest('.n-groupLi').removeClass('n-empty');
     });
   }
 

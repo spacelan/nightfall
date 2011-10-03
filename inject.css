@@ -35,22 +35,25 @@ tr.pl:hover .n-oprts {display:block}
 .n-groupLi {padding-bottom:20px}
   .n-groupLi.n-on {padding-bottom:0}
   .n-groupLi.n-cur {background:#eee}
+  .n-groupLi.n-empty {padding:0}
 
 .n-groupLi .hd {border-top:1px dashed #ddd; padding-top:5px}
+  .n-groupLi.n-empty .hd {padding-top:0}
   .n-groupLi .hd a {display:inline-block; padding:0 20px;
     height:30px; line-height:30px}
 
   .n-groupLi .n-subject {float:left}
-  .n-groupLi .n-toggle {float:right}
 
-  .n-groupLi .n-toggle a {width:50px; padding:0; text-align:center}
+  .n-groupLi .n-toggle {float:right}
+    .n-groupLi.n-empty .n-toggle {display:none}
+    .n-groupLi .n-toggle a {width:50px; padding:0; text-align:center}
 
   .n-groupLi .n-collapse {display:none !important}
   .n-groupLi.n-on .n-collapse {display:inline-block !important}
   .n-groupLi.n-on .n-expand {display:none !important}
 
 .n-newMembers {padding:10px 28px 0}
-  .n-newMembers.n-empty {padding:0}
+  .n-groupLi.n-empty .n-newMembers {padding:0}
 
 .n-groupLi .bd {display:none; padding:20px}
 
