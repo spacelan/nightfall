@@ -274,10 +274,7 @@
         $bd = $t.find('.bd'),
         url = $t.find('.hd a').attr('href') + 'members';
 
-        setTimeout(function()
-        {
-          loadMemberLs($bd,url);
-        }, 100 * idx);
+        setTimeout(loadMemberLs, 1000 * idx, $bd, url);
       });
     });
   }
