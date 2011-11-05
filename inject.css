@@ -28,6 +28,11 @@ tr.pl:hover .n-oprts {display:block}
   tr.pl.n-on .n-enter {display:inline}
 
   tr.n-preview {display:none;}
+  
+  .topic-reply .n-sp a {display:block; height:24px; line-height:24px; 
+    background:#eee; color:#999; text-align:center}
+    
+  .topic-reply .n-sp a:hover {color:#666}
 
 .zbar .n-on {background:#fff; margin:3px 0 0; padding:5px 10px 3px}
   .zbar .n-on:hover {color:#666}

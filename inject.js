@@ -14,9 +14,15 @@
   // mod topic list
   // ------------------
   var mutedTopics = [],
-    blockedUsers = [];
+    blockedUsers = [],
 
     // constants
+    REPLY_LS_LENGTH = 6,
+    TRUNK_LENGTH = Math.round(REPLY_LS_LENGTH / 2),
+    HEAD_IDX = TRUNK_LENGTH - 1,
+    
+    // misc
+    
 
     // dom elements
     $tabNav = $('.zbar>div'),
@@ -43,6 +49,7 @@
       '<div class="n-ctn n-box">loading...</div></td></tr>'),
     $lsLoadingTpl = $('<tr class="n-lsLoading n-empty">'+
       '<td colspan="5">loading</td></tr>'),
+    $replySpTpl = $('<li class="n-sp"><a target="_blank">All comments</a></li>'),
 
     $memberTabCtn = $('<div id="n-memberCtn" class="n-empty">loading</div>'),
     $groupLiTpl = $('<div class="n-groupLi n-empty">'+
@@ -137,10 +144,42 @@
 
     if($preview.hasClass('n-empty'))
     {
-      $preview.find('.n-ctn').load($t.find('td:first a').attr('href')+
-        ' .topic-content, .topic-reply', function()
+      var topicUri = $t.find('td:first a').attr('href');
+      
+      $preview.find('.n-ctn').load(topicUri + 
+          ' .topic-content, .topic-reply, .paginator', 
+      function()
       {
-        $(this).find('.topic-opt, .sns-bar, .topic-reply li:gt(4)').remove();
+        var $page = $(this),
+          count_replies = $page.find('.topic-reply li').length;
+          
+        $page.find('.topic-opt, .sns-bar').remove();
+          
+        if(count_replies > REPLY_LS_LENGTH)
+        {
+          $paginator = $page.find('.paginator');
+          
+          var $ls = $page.find('.topic-reply'),
+              $tail = $ls.find('li:gt(' + HEAD_IDX + ')').detach();
+              
+          $ls.append($replySpTpl.clone().find('a').attr('href', topicUri).end());
+          
+          if($paginator.length)
+          {
+            var lastPgUri = $page.find('.paginator>a:last').attr('href');
+            $paginator.remove();
+            
+            $('<div />').load(lastPgUri + ' .topic-reply', function()
+            {
+              $ls.append($(this).find('li').slice(-TRUNK_LENGTH));
+            });
+          }
+          else
+          {
+            $ls.append($tail.slice(-TRUNK_LENGTH));
+          }
+        }
+        
         $preview.removeClass('n-empty');
       });
     }
@@ -286,6 +325,16 @@
     $ctn.text('loading...').addClass('n-ing').
       load(url+' .obss:last, .paginator', function()
     {
+      $.each($ctn.find('dl.obu'), function(idx, el)
+      {
+        var $t = $(el),
+          username = $t.find('dd a').text();
+        
+        if(-1 < $.inArray(username, blockedUsers))
+        {
+          $t.remove();
+        }
+      });
       var $groupLi = $ctn.closest('.n-groupLi');
       if($groupLi.hasClass('n-empty'))
       {
