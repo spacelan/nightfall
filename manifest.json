@@ -1,27 +1,36 @@
 {
-  "name": "豆瓣\"我的小组\"增强",
-  "version": "0.7.5",
-  "description": "给豆瓣\"我的小组\"页面增加ajax刷新、屏蔽帖子、屏蔽用户和小组成员列表功能",
-  "background_page": "background.html",
-  "content_scripts" : [
+    "name": "豆瓣\"我的小组\"增强",
+    "version": "0.8.0",
+    "description": "给豆瓣\"我的小组\"页面增加ajax刷新、屏蔽帖子、屏蔽用户和小组成员列表功能",
+    "background_page": "background.html",
+    "content_scripts" : [
+        {
+            "matches" : [
+                "http://www.douban.com/group/",
+                "http://www.douban.com/group/?start=*"
+            ],
+            "js" : ["jquery.min.js", "common.js"],
+            "all_frames" : false,
+            "run_at" : "document_start"
+        },
+        {
+            "matches" : [
+                "http://www.douban.com/group/",
+                "http://www.douban.com/group/?start=*"
+            ],
+            "css" : ["inject.css"],
+            "js" : ["topics.js", "localmembers.js"],
+            "all_frames" : false,
+            "run_at" : "document_end"
+        }
+    ],
+    "page_action" :
     {
-      "matches" : [
-        "http://www.douban.com/group/",
-        "http://www.douban.com/group/?start=*"
-      ],
-      "css" : ["inject.css"],
-      "js" : ["jquery.min.js", "inject.js"],
-      "all_frames" : false,
-      "run_at" : "document_end"
+        "default_icon" : "icon-19.png",
+        "default_title" : "u: 刷新帖子列表\nj: 选中下一个帖子/小组\nk: 选中上一个帖子/小组\no: 展开/折叠当前选中的帖子/小组\nm: 屏蔽当前选中的帖子\nb: 屏蔽当前选中的帖子的作者"
+    },
+    "icons" : {
+        "48" : "icon-48.png",
+        "128" : "icon-128.png"
     }
-  ],
-  "page_action" :
-  {
-    "default_icon" : "icon-19.png",
-    "default_title" : "u: 刷新帖子列表\nj: 选中下一个帖子/小组\nk: 选中上一个帖子/小组\no: 展开/折叠当前选中的帖子/小组\nm: 屏蔽当前选中的帖子\nb: 屏蔽当前选中的帖子的作者"
-  },
-  "icons" : {
-    "48" : "icon-48.png",
-    "128" : "icon-128.png"
-  }
 }
