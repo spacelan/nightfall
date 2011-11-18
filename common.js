@@ -19,12 +19,25 @@
     window.n = {};
     
     n.C_LI = 'n-li';
+    n.S_LI = '.' + n.C_LI;
+    
     n.C_CUR = 'n-cur';
+    n.S_CUR = '.' + n.C_CUR;
+    
     n.C_PREVIEW = 'n-preview';
+    n.S_PREVIEW = '.' + n.C_PREVIEW;
+    
     n.C_ON = 'n-on';
+    n.S_ON = '.' + n.C_ON;
+    
     n.C_EMPTY = 'n-empty';
+    n.S_EMPTY = '.' + n.C_EMPTY;
+    
     n.C_CTN = 'n-ctn';
+    n.S_CTN = '.' + n.C_CTN;
+    
     n.C_ING = 'n-ing';
+    n.S_ING = '.' + n.C_ING;
     
     n.E_INIT_START = 'evt-init_start';
     n.E_INIT_DONE = 'evt-init_done';
@@ -57,40 +70,52 @@
     
     n.is_initialized = false;
     
-    n.toggle = function() {
-        var j_t = $(this);
+    function toggle(j_t) {
         if(j_t.hasClass(n.C_ON)) {
             j_t.trigger(n.E_COLLAPSE);
         } else {
             j_t.trigger(n.E_EXPAND);
         }
-    }
+    };
     
-    n.next = function() {
-        var j_t = $(this), 
-            j_next = j_t.nextAll('.'+n.C_LI+':first');
+    function next(j_t) {
+        var j_next = j_t.nextAll(n.S_LI+':first');
 
         if(j_next.length) {
             j_t.removeClass(n.C_CUR);
             j_next.addClass(n.C_CUR);
             j_next.trigger(n.E_SCROLL);
         }
-    }
+    };
 
-    n.prev = function() {
-        var j_t = $(this), 
-            j_prev = j_t.prevAll('.'+n.C_LI+':first');
+    function prev(j_t) {
+        var j_prev = j_t.prevAll(n.S_LI+':first');
 
         if(j_prev.length) {
             j_t.removeClass(n.C_CUR);
             j_prev.addClass(n.C_CUR);
             j_prev.trigger(n.E_SCROLL);
         }
-    }
+    };
 
-    n.scroll = function() {
-        n.j_doc.scrollTop($(this).offset().top);
-    }
+    function scroll(j_t) {
+        n.j_doc.scrollTop(j_t.offset().top);
+    };
+    
+    n.bind_handlers = function(j_container){
+        j_container.delegate(n.S_LI, n.E_TOGGLE, function(e){
+            toggle($(this));
+        }).
+        delegate(n.S_LI, n.E_NEXT, function(e){
+            next($(this));
+        }).
+        delegate(n.S_LI, n.E_PREV, function(e){
+            prev($(this));
+        }).
+        delegate(n.S_LI, n.E_SCROLL, function(e){
+            scroll($(this));
+        })
+    };
     
     n.ban_user = function(uid){
         post_withck('/j/contact/addtoblacklist', {'people': uid});
@@ -160,7 +185,7 @@
     function bind_kb_shortcuts() {
         // keyboard shortcuts
         n.j_doc.keydown(function(e) {
-            var j_t = $('.'+n.C_CUR);
+            var j_t = $(n.S_CUR);
             
             switch(e.which) {
             // u for refresh

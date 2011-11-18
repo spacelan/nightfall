@@ -48,7 +48,7 @@
             // will remove in future
             if(-1 < $.inArray(j_t.find('td:nth-child(3)').text(),
                              n.blacklist_legacy)){
-                j_t.trigger(n.E_BLOCK);
+                mute_all_by_user(j_t);
             
             // remove muted topic    
             } else if(-1 < $.inArray(extract_id(j_t.find('td:first a').
@@ -65,8 +65,8 @@
     }
    
     function remove_by_username(username, j_container){
-        $.each(j_container.find('td:nth-child(3):contains("' + username + '")'), 
-            function(idx, el) {
+        j_container.find('td:nth-child(3):contains("' + username + '")').
+            each(function(idx, el) {
                 remove($(el).closest('tr.pl'));
             });
     }
@@ -84,15 +84,14 @@
             }
         }
 
-        j_topic.next('.'+n.C_PREVIEW).remove();
+        j_topic.next(n.S_PREVIEW).remove();
         j_topic.remove();
     }
     
-    function expand() {
-        var j_t = $(this), 
-            j_preview = j_t.next('.'+n.C_PREVIEW);
+    function expand(j_t) {
+        var j_preview = j_t.next(n.S_PREVIEW);
 
-        j_t.siblings('.'+n.C_ON).trigger(n.E_COLLAPSE);
+        j_t.siblings(n.S_ON).trigger(n.E_COLLAPSE);
         j_t.addClass(n.C_ON).trigger(n.E_SCROLL);
         j_preview.show('fast');
 
@@ -102,7 +101,7 @@
     }
     
     function preview(topic_uri, j_preview){
-        j_preview.find('.'+n.C_CTN).
+        j_preview.find(n.S_CTN).
             load(topic_uri + ' .topic-content, .topic-reply, .paginator', 
                 function() {
                     
@@ -136,14 +135,12 @@
         });
     }
 
-    function collapse() {
-        var j_t = $(this);
-        j_t.removeClass(n.C_ON).next('.'+n.C_PREVIEW).hide();
+    function collapse(j_t) {
+        j_t.removeClass(n.C_ON).next(n.S_PREVIEW).hide();
     }
 
-    function mute() {
-        var j_t = $(this), 
-            id = extract_id(j_t.find('td:first a').attr('href'));
+    function mute(j_t) {
+        var id = extract_id(j_t.find('td:first a').attr('href'));
 
         remove(j_t);
 
@@ -156,16 +153,17 @@
         }
     }
 
-    function mute_all_by_user() {
-        var username = $(this).find('td:nth-child(3)').text();
+    function mute_all_by_user(j_t) {
+        var username = j_t.find('td:nth-child(3)').text();
 
-        remove_by_username(username, j_mainls);
+        remove_by_username(username, j_t.closest('tbody'));
 
         if(-1 === $.inArray(username, n.blacklist_names)) {
             n.blacklist_names.push(username);
             
-            $('<div />').load($(this).find('td:first a').
-                    attr('href') + ' #content h3 a', function(){                
+            $('<div />').load(j_t.find('td:first a').
+                        attr('href') + ' #content h3 a', 
+                    function(){                
                 $.get($(this).find('a').attr('href'), function(data){
                     var m = data.match(/people_info\s=\s{.*"id":\s"(\d+)".*},/);
                     if(m && 1 < m.length){
@@ -187,49 +185,53 @@
             var j_t = $(this);
             process_ls(j_t);
             j_t.find('tbody').replaceAll(j_mainls.find('tbody'));
-            j_mainls.find('.'+n.C_CUR).trigger(n.E_SCROLL);
+            j_mainls.find(n.S_CUR).trigger(n.E_SCROLL);
         });
     }
     
     function bind_handlers(){
-        j_mainls.delegate('tr.pl', n.E_EXPAND, expand).
-            delegate('tr.pl', n.E_COLLAPSE, collapse).
-            delegate('tr.pl', n.E_TOGGLE, n.toggle).
-            delegate('tr.pl', n.E_NEXT, n.next).
-            delegate('tr.pl', n.E_PREV, n.prev).
-            delegate('tr.pl', n.E_SCROLL, n.scroll).
-            delegate('tr.pl', n.E_MUTE, mute).
-            delegate('tr.pl', n.E_BLOCK, mute_all_by_user).
-            delegate('.n-oprts .n-preview', 'click', function() {
-                var j_t = $(this).closest('tr');
-    
-                if(!j_t.hasClass(n.C_CUR)) {
-                    j_mainls.find('.'+n.C_CUR).removeClass(n.C_CUR);
-                    j_t.addClass(n.C_CUR);
-                }
-    
-                j_t.trigger(n.E_EXPAND);
-            }).
-            delegate('.n-oprts .n-hide', 'click', function() {
-                var j_t = $(this).closest('tr');
-    
-                if(!j_t.hasClass(n.C_CUR)) {
-                    j_mainls.find('.'+n.C_CUR).removeClass(n.C_CUR);
-                    j_t.addClass(n.C_CUR);
-                }
-    
-                j_t.trigger(n.E_COLLAPSE);
-            }).
-            delegate('.n-oprts .n-mute', 'click', function() {
-                $(this).closest('tr').trigger(n.E_MUTE);
-            }).
-            delegate('.n-oprts .n-block', 'click', function() {
-                $(this).closest('tr').trigger(n.E_BLOCK);
-            });
+        j_mainls.delegate('tr.pl', n.E_EXPAND, function(e){
+            expand($(this));
+        }).
+        delegate('tr.pl', n.E_COLLAPSE, function(e){
+            collapse($(this));
+        }).
+        delegate('tr.pl', n.E_MUTE, function(e){
+            mute($(this));
+        }).
+        delegate('tr.pl', n.E_BLOCK, function(e){
+            mute_all_by_user($(this));
+        }).
+        delegate('.n-oprts .n-preview', 'click', function(e) {
+            var j_t = $(this).closest('tr');
+
+            if(!j_t.hasClass(n.C_CUR)) {
+                j_mainls.find(n.S_CUR).removeClass(n.C_CUR);
+                j_t.addClass(n.C_CUR);
+            }
+
+            j_t.trigger(n.E_EXPAND);
+        }).
+        delegate('.n-oprts .n-hide', 'click', function(e) {
+            var j_t = $(this).closest('tr');
+
+            if(!j_t.hasClass(n.C_CUR)) {
+                j_mainls.find(n.S_CUR).removeClass(n.C_CUR);
+                j_t.addClass(n.C_CUR);
+            }
+
+            j_t.trigger(n.E_COLLAPSE);
+        }).
+        delegate('.n-oprts .n-mute', 'click', function(e) {
+            $(this).closest('tr').trigger(n.E_MUTE);
+        }).
+        delegate('.n-oprts .n-block', 'click', function(e) {
+            $(this).closest('tr').trigger(n.E_BLOCK);
+        });
+        
+        n.bind_handlers(j_mainls);
             
-        n.j_doc.bind(n.E_RELOAD, function(){
-            reload();
-        });    
+        n.j_doc.bind(n.E_RELOAD, reload);    
     }
     
     function init(){
@@ -237,7 +239,7 @@
         
         bind_handlers();
         process_ls(j_mainls);
-        j_mainls.find('.'+n.C_CUR).trigger(n.E_SCROLL);
+        j_mainls.find(n.S_CUR).trigger(n.E_SCROLL);
         
         n.j_doc.trigger(n.E_INIT_TOPIC_DONE);
     }

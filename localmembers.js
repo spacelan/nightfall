@@ -89,9 +89,8 @@
         });
     }
     
-    function expand() {
-        var j_t = $(this), 
-            j_preview = j_t.find('.n-newMembers');
+    function expand(j_t) {
+        var j_preview = j_t.find('.n-newMembers');
         
         j_preview.hide();
         j_t.find('.bd').show();
@@ -99,9 +98,7 @@
         j_t.addClass(n.C_ON).trigger(n.E_SCROLL);
     }
 
-    function collapse() {
-        var j_t = $(this);
-        
+    function collapse(j_t) {
         j_t.find('.bd').hide();
         j_t.find('.n-newMembers').show();
         j_t.removeClass(n.C_ON);
@@ -143,27 +140,27 @@
     }
     
     function bind_handlers(){
-        j_members_bd.delegate('.n-groupLi', n.E_EXPAND, expand).
-            delegate('.n-groupLi', n.E_COLLAPSE, collapse).
-            delegate('.n-groupLi', n.E_TOGGLE, n.toggle).
-            delegate('.n-groupLi', n.E_NEXT, n.next).
-            delegate('.n-groupLi', n.E_PREV, n.prev).
-            delegate('.n-groupLi', n.E_SCROLL, n.scroll).
-            delegate('.n-groupLi .n-toggle', 'click', function(e) {
-                var j_group = $(this).closest('.n-groupLi');
-    
-                if(!j_group.hasClass(n.C_CUR)) {
-                    j_members_bd.find('.'+n.C_CUR).removeClass(n.C_CUR);
-                    j_group.addClass(n.C_CUR);
-                }
-    
-                j_group.trigger('toggle');
-            }).delegate('.n-groupLi .paginator a', 'click', function(e) {
-                e.preventDefault();
-    
-                var j_link = $(this);
-                load_members(j_link.closest('.bd'), j_link.attr('href'));
-            });
+        j_members_bd.delegate(n.S_LI, n.E_EXPAND, function(e){
+            expand($(this));
+        }).
+        delegate(n.S_LI, n.E_COLLAPSE, function(e){
+            collapse($(this));
+        }).
+        delegate('.n-groupLi .n-toggle', 'click', function(e) {
+            var j_group = $(this).closest('.n-groupLi');
+
+            if(!j_group.hasClass(n.C_CUR)) {
+                j_members_bd.find(n.S_CUR).removeClass(n.C_CUR);
+                j_group.addClass(n.C_CUR);
+            }
+
+            j_group.trigger(n.E_TOGGLE);
+        }).delegate('.n-groupLi .paginator a', 'click', function(e) {
+            e.preventDefault();
+
+            var j_link = $(this);
+            load_members(j_link.closest('.bd'), j_link.attr('href'));
+        });
     }
     
     function init(){
@@ -174,6 +171,7 @@
         
         process_tabs();
         bind_handlers();
+        n.bind_handlers(j_members_bd);
     }
     
     if(n.is_initialized){
