@@ -32,8 +32,8 @@
         '</div>');
         
     function load_groups(){
-        $('<div />').load('/group/mine .indent:last', function() {
-            j_members_bd.empty().removeClass(n.C_EMPTY);
+        $('<div />').load('/group/mine .article .indent:last', function() {
+            j_members_bd.empty().removeClass(n.C_EMPTY);console.log($(this));
 
             $.each($(this).find('dl'), function(idx, el) {
                 var j_link = $('dd a', this), 

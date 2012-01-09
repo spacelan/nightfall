@@ -102,19 +102,21 @@
     
     function preview(topic_uri, j_preview){
         j_preview.find(n.S_CTN).
-            load(topic_uri + ' .topic-content, .topic-reply, .paginator', 
+            load(topic_uri + ' .article>.topic-content' +
+                             ', .article>.topic-reply' +
+                             ', .article>.paginator', 
                 function() {
                     
             var j_topic = $(this), 
+                j_reply = j_topic.find('.topic-reply'),
                 count_replies = j_topic.find('.topic-reply li').length;
 
-            j_topic.find('.topic-opt, .sns-bar').remove();
+            j_topic.find('.topic-opt, .topic-report, .sns-bar').remove();
 
             if(count_replies > REPLY_LS_LENGTH) {
                 var j_paginator = j_topic.find('.paginator'),
-                    j_reply = j_topic.find('.topic-reply'), 
                     j_tail = j_reply.find('li:gt(' + HEAD_IDX + ')').detach();
-
+                    
                 j_reply.append(tpl.reply_sp.clone().
                     find('a').attr('href', topic_uri).end());
 
@@ -123,6 +125,7 @@
                             attr('href') + ' .topic-reply', 
                             function() {
                         j_reply.append($(this).find('li').slice(-TRUNK_LENGTH));
+                        j_reply.find('.operation_div').remove();
                     });
                     
                     j_paginator.remove();
@@ -130,6 +133,8 @@
                     j_reply.append(j_tail.slice(-TRUNK_LENGTH));
                 }
             }
+            
+            j_reply.find('.operation_div').remove();
 
             j_preview.removeClass(n.C_EMPTY);
         });
