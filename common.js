@@ -59,7 +59,8 @@
     n.blacklist = [];
     n.blacklist_names = [];
     n.blacklist_uris = [];
-    n.blacklist_legacy = [];
+    n.show_only_local_members = true;
+    n.show_only_new_members = true;
     
     n.j_doc = $(document);
     
@@ -181,6 +182,37 @@
         });
     }
     
+    n.load_data = function(key, callback){
+        chrome.extension.sendRequest({
+            "action" : 'load_data',
+            'key': key
+        }, function(response) {
+            if(response.done) {
+                callback(response.data);
+            } else {
+                var errmsg = 'failed to load data from background page';
+                console && console.log('ERR: '+errmsg);
+                n.j_doc.trigger(n.E_INIT_FAILED, [errmsg]);
+            }
+        });
+    }
+    
+    n.save_data = function(key, value){
+        chrome.extension.sendRequest({
+            "action" : 'save_data',
+            'key': key,
+            'value': value
+        }, function(response) {
+            if(response.done) {
+                return true;
+            } else {
+                var errmsg = 'failed to load data from background page';
+                console && console.log('ERR: '+errmsg);
+                n.j_doc.trigger(n.E_INIT_FAILED, [errmsg]);
+            }
+        });
+    }
+    
     // bind event handlers of topic ls
     function bind_kb_shortcuts() {
         // keyboard shortcuts
@@ -223,11 +255,13 @@
     
     function init(){
         chrome.extension.sendRequest({
-            "action" : 'getData'
+            "action" : 'load_storage'
         }, function(response) {
             if(response.done) {
-                n.topic.muted = response.mutedTopics;
-                n.blacklist_legacy = response.blockedUsers;
+                n.topic.muted = response.muted_topic;
+                //n.show_only_local_members = response.show_only_local_members;
+                //n.show_only_new_members = response.show_only_new_members;
+                //n.blacklist_legacy = response.blockedUsers;
                 
                 bind_kb_shortcuts();
                 

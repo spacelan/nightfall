@@ -62,6 +62,20 @@ tr.pl:hover .n-oprts {display:block}
 
 .n-groupLi .bd {display:none; padding:20px}
 
+.n-switches {margin-bottom:20px}
+.n-switches:after {clear:both}
+
+.n-switches .on a.on {display:none}
+.n-switches .on span.on {display:inline; font-weight:bold}
+.n-switches .on a.off {display:inline}
+.n-switches .on span.off {display:none}
+
+.n-switches span.on {display:none}
+.n-switches a.off {display:none}
+.n-switches span.off {font-weight:bold}
+
+
+
 .n-box {box-shadow:0px 5px 15px rgba(0, 0, 0, 0.2); margin:0 -30px;
   border:1px #ccc solid; border-radius:4px; background:#fff}
 

@@ -46,13 +46,12 @@
             
             // remove legacy blocked users' topics and block again with new way
             // will remove in future
-            if(-1 < $.inArray(j_t.find('td:nth-child(3)').text(),
+            /*if(-1 < $.inArray(j_t.find('td:nth-child(3)').text(),
                              n.blacklist_legacy)){
-                mute_all_by_user(j_t);
+                mute_all_by_user(j_t);*/
             
-            // remove muted topic    
-            } else if(-1 < $.inArray(extract_id(j_t.find('td:first a').
-                                  attr('href')), 
+            // remove muted topic            
+            if(-1 < $.inArray(extract_id(j_t.find('td:first a').attr('href')), 
                               n.topic.muted)) {
                 remove(j_t);
             } else {

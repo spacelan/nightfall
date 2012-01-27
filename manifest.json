@@ -1,6 +1,6 @@
 {
     "name": "豆瓣\"我的小组\"增强",
-    "version": "0.8.2",
+    "version": "0.8.5",
     "description": "给豆瓣\"我的小组\"页面增加ajax刷新、屏蔽帖子、屏蔽用户和小组成员列表功能",
     "background_page": "background.html",
     "content_scripts" : [

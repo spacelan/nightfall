@@ -2,106 +2,99 @@
 <html>
 <head>
 <script src="jquery.min.js"></script>
+<script src="json2.js"></script>    
 <script>
 /**
  *
  * @author : snow@firebloom.cc
  * @license : GPLv3
  */
-  var mutedTopics = localStorage['mutedTopics'],
-    blockedUsers = localStorage['blockedUsers'];
-
-  if('string' === typeof mutedTopics )
-  {
-    mutedTopics = mutedTopics.split(',');
-  }
-  else
-  {
-    mutedTopics = [];
-  }
-
-  if('string' === typeof blockedUsers)
-  {
-    tmp = blockedUsers.split(',');
-    blockedUsers = [];
-    $.each(tmp, function(idx, el)
+var S_MUTED_TOPICS = 'muted_topics',
+    //S_BLOCKED_USERS = 'blocked_users',
+    S_ONLY_LOCAL_MEMBERS = 'is_only_local_mermbers',
+    S_ONLY_NEW_MEMBERS = 'is_only_new_mermbers';
+    
+function _str2ar(str){
+    var result = [];
+    
+    ('string' === typeof str) && $.each(str.split(','), function(idx, el)
     {
-      if(el.length > 0)
-      {
-        blockedUsers.push(el);
-      }
+        if(el.length > 0)
+        {
+            result.push(el);
+        }
     });
-  }
-  else
-  {
-    blockedUsers = [];
-  }
+    
+    return result;
+}   
+    
+var muted_topics = _str2ar(localStorage[S_MUTED_TOPICS]);
 
-  chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
-  {
+/* legacy competity, will remove in future */
+$.each(_str2ar(localStorage['mutedTopics']), function(idx, el){
+    muted_topics.push(el);
+});
+
+chrome.extension.onRequest.addListener(function(request, sender, sendResponse)
+{
     if(request.action)
     {
-      switch(request.action)
-      {
+        switch(request.action)
+        {
         case 'showPgAct':
-          chrome.pageAction.show(sender.tab.id);
-          sendResponse();
+            chrome.pageAction.show(sender.tab.id);
+            sendResponse();
         break;
 
         case 'muteTopic':
-          if(request.objectId)
-          {
-            sendResponse({"done":1});
-
-            if(-1 === $.inArray(request.objectId, mutedTopics))
+            if(request.objectId)
             {
-              mutedTopics.push(request.objectId);
-              localStorage['mutedTopics'] = mutedTopics;
+                sendResponse({"done":1});
+
+                if(-1 === $.inArray(request.objectId, muted_topics))
+                {
+                    muted_topics.push(request.objectId);
+                    localStorage[S_MUTED_TOPICS] = muted_topics;
+                }
             }
-          }
-          else
-          {
-            sendResponse({"done":0});
-          }
+            else
+            {
+                sendResponse({"done":0});
+            }
         break;
 
-        case 'blockUser':
-          if(request.objectId)
-          {
-            sendResponse({"done":1});
-
-            if(-1 === $.inArray(request.objectId, blockedUsers))
-            {
-              blockedUsers.push(request.objectId);
-              localStorage['blockedUsers'] = blockedUsers;
-            }
-          }
-          else
-          {
-            sendResponse({"done":0});
-          }
-        break;
-
-        case 'getData':
-          sendResponse({
-            "done" : 1,
-            "mutedTopics" : mutedTopics,
-            "blockedUsers" : blockedUsers
-          });
+        case 'load_storage':
+            sendResponse({
+                "done" : 1,
+                "muted_topic": muted_topics,
+                'show_only_local_members': localStorage[S_MUTED_TOPICS],
+                'show_only_new_members': localStorage[S_ONLY_NEW_MEMBERS]
+            });
         break;
 
         case 'clearData':
-          localStorage['mutedTopics'] = mutedTopics = [];
-          localStorage['blockedUsers'] = blockedUsers = [];
-          sendResponse({"done":1});
+            localStorage[S_MUTED_TOPICS] = muted_topics = [];
+            sendResponse({"done": 1});
+        break;
+        
+        case 'load_data':
+            sendResponse({
+                'done': 1,
+                'data': JSON.parse(localStorage[request.key] || '{}')
+            });
+        break;
+        
+        case 'save_data':
+            localStorage[request.key] = JSON.stringify(request.value);
+            sendResponse({"done": 1});
         break;
       }
     }
     else
     {
-      sendResponse({"done":0});
+        sendResponse({"done": 0});
     }
-  });
+});
 </script>
 </head>
 </html>
