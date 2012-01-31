@@ -85,6 +85,7 @@
 
         j_topic.next(n.S_PREVIEW).remove();
         j_topic.remove();
+        j_mainls.find(n.S_CUR).trigger(n.E_SCROLL);
     }
     
     function expand(j_t) {
