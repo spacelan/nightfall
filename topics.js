@@ -71,21 +71,27 @@
     }
     
     function remove(j_topic){
+        var scroll = false;
+        
         if(j_topic.hasClass(n.C_CUR)) {
             var j_next = j_topic.nextAll('tr.pl:first');
             if(j_next.length) {
                 j_next.addClass(n.C_CUR);
+                scroll = true;
             } else {
                 var j_prev = j_topic.prevAll('tr.pl:first');
                 if(j_prev.length) {
                     j_prev.addClass(n.C_CUR);
+                    scroll = true;
                 }
             }
         }
 
         j_topic.next(n.S_PREVIEW).remove();
         j_topic.remove();
-        j_mainls.find(n.S_CUR).trigger(n.E_SCROLL);
+        if(scroll){
+            j_mainls.find(n.S_CUR).trigger(n.E_SCROLL);
+        }
     }
     
     function expand(j_t) {
@@ -100,6 +106,18 @@
         }
     }
     
+    function get_cleaned_replies(j_container){
+        j_container.find('li h4 a').each(function(idx, el){
+            var j_t = $(el);
+            
+            if(-1 < $.inArray(j_t.text(), n.blacklist_names)){
+                j_t.closest('li').remove();
+            }
+        });
+        
+        return j_container;
+    }
+    
     function preview(topic_uri, j_preview){
         j_preview.find(n.S_CTN).
             load(topic_uri + ' .article>.topic-content' +
@@ -108,7 +126,7 @@
                 function() {
                     
             var j_topic = $(this), 
-                j_reply = j_topic.find('.topic-reply'),
+                j_reply = get_cleaned_replies(j_topic.find('.topic-reply')),
                 count_replies = j_topic.find('.topic-reply li').length;
 
             j_topic.find('.topic-opt, .topic-report, .sns-bar').remove();
@@ -124,7 +142,8 @@
                     $('<div />').load(j_topic.find('.paginator>a:last').
                             attr('href') + ' .topic-reply', 
                             function() {
-                        j_reply.append($(this).find('li').slice(-TRUNK_LENGTH));
+                        j_reply.append(get_cleaned_replies($(this)).
+                                           find('li').slice(-TRUNK_LENGTH));
                         j_reply.find('.operation_div').remove();
                     });
                     
