@@ -10,6 +10,8 @@
     throw 'no local storage'
   }
 
+  var blockedIds = [];
+
   function processTopics() {
     var highlightLocations = false;
     chrome.storage.sync.get('highlightLocations', function(items){
@@ -34,12 +36,20 @@
             ' #content .topic-doc > h3, #content .topic-doc .topic-content';
           $('<div />').load(topicPreviewUri, function(resp){
             var jPreview = $(this),
-              jAuthorLink = jPreview.find('.from a'),
-              author = {
+              jAuthorLink = jPreview.find('.from a');
+
+            if(0 == jAuthorLink.length){
+              // load faield
+              return;
+            }
+
+            var author = {
                 uri: jAuthorLink.attr('href'),
                 name: jAuthorLink.text()
               },
               locationCache = author.uri + '/location';
+
+            author.id = author.uri.match(/\/people\/([\w\.-]+)\//)[1];
 
             NtfCache.fetchAsync(locationCache, function(setLocation){
               // console.log('fetching: ' + locationCache);
@@ -61,7 +71,7 @@
 
       }, function(author){
         jTr.find('td:eq(0)').text(author.location);
-        jTr.find('td:eq(1)').html('<a href="'+author.uri+'">'+author.name+'</a>');
+        jTr.find('td:eq(1)').html('<a data-uid="'+author.id+'" href="'+author.uri+'">'+author.name+'</a>');
 
         if(highlightLocations) {
           var found = false
@@ -71,12 +81,21 @@
                 found = true;
                 return false;
               }
+
+              if(jTr.find('td:eq(3)').text().indexOf(loc) > -1) {
+                found = true;
+                return false;
+              }
             });
           }
 
           if(!found) {
             jTr.addClass('ntf-quiet');
           }
+        }
+
+        if($.contains(blockedIds, author.id)) {
+          jTr.addClass('ntf-quiet');
         }
       }); // fetch authorCache
     });
@@ -98,10 +117,36 @@
     setTimeout(callback, timeout);
   }
 
+  function loadBlacklist(){
+    $.ajax('/contacts/blacklist', {
+      dataType: 'html',
+      success: function(dom){
+        var jBlDoc = $(dom);
+
+        jBlDoc.find('.article .obu dd a').each(function(idx, el){
+          try{
+            blockedIds.push($(el).attr('href').match(/\/people\/([\w\.-]+)\//)[1]);
+          } catch(TypeError) {
+            console.log($(el));
+          }
+        });
+
+        jDoc.trigger('ntf.blacklistLoaded');
+
+        $.each(blockedIds, function(idx, el){
+          $('.article .olt [data-uid="'+el+'"]').each(function(idx, el){
+            $(el).closest('tr').addClass('ntf-quiet');
+          });
+        });
+      }
+    });
+  }
+
   var jDoc = $(document);
 
   jDoc.on('ntf.init', function(argument) {
     $('.article, .aside').addClass('ntf');
+    loadBlacklist();
 
     jDoc.trigger('ntf.load');
 
