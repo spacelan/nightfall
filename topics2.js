@@ -10,18 +10,7 @@
     throw 'no local storage'
   }
 
-  if(localStorage['masterOn']) {
-    processTopics();
-  } else {
-    $('.profile-entry .pic a').attr('href', 'javascript:;').click(function(evt){
-      processTopics();
-      localStorage['masterOn'] = true;
-    });
-  }
-
   function processTopics() {
-    $('.article, .aside').addClass('ntf');
-
     var highlightLocations = false;
     chrome.storage.sync.get('highlightLocations', function(items){
       if(items.highlightLocations) {
@@ -93,9 +82,49 @@
     });
   }
 
+  function reloadTopics() {
+    var jTbody = $('.article .olt tbody');
+    if(jTbody.hasClass('ntf-loading')){ return; }
+
+    jTbody.empty();
+    jTbody.load('/group/ .article .olt tbody', function() {
+      jDoc.trigger('ntf.load');
+    });
+  }
+
   function runAfterRandomTimeout(callback) {
     // 501 ~ 800
     var timeout = Math.floor((Math.random() * 10) + 1) * 30 + 500;
     setTimeout(callback, timeout);
   }
+
+  var jDoc = $(document);
+
+  jDoc.on('ntf.init', function(argument) {
+    $('.article, .aside').addClass('ntf');
+
+    jDoc.trigger('ntf.load');
+
+    jDoc.keydown(function(evt){
+      switch(evt.which) {
+        // u for refresh
+        case 85:
+        reloadTopics();
+        break;
+      }
+    });
+  });
+
+  jDoc.on('ntf.load', processTopics);
+
+  if(localStorage['masterOn']) {
+    jDoc.trigger('ntf.init');
+
+  } else {
+    $('.profile-entry .pic a').attr('href', 'javascript:;').click(function(evt){
+      localStorage['masterOn'] = true;
+      jDoc.trigger('ntf.init');
+    });
+  }
+
 })(jQuery);
