@@ -30,14 +30,21 @@
       "run_at" : "document_start"
     },
     {
-      "matches" : [
+      "matches": [
         "*://www.douban.com/group/",
         "*://www.douban.com/group/?start=*"
       ],
       "css": ["topics.css"],
       "js": ["topics2.js"],
-      "all_frames" : false,
-      "run_at" : "document_end"
+      "all_frames": false,
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "*://www.douban.com/contacts/blacklist*"
+      ],
+      "js": ["jquery-2.1.4.min.js", "blacklist.js"],
+      "all_frames": false
     }
   ]
   /*"content_scripts" : [
