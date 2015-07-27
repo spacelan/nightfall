@@ -10,6 +10,13 @@
     throw 'no local storage'
   }
 
+  var highlightLocations = false;
+  chrome.storage.sync.get('highlightLocations', function(items){
+    if(items.highlightLocations) {
+      highlightLocations = items.highlightLocations;
+    }
+  });
+
   $('#content .topics tr').each(function(idx, el){
     var jTr = $(el),
       jTdSubject = jTr.find('.td-subject'),
@@ -54,6 +61,22 @@
     }, function(author){
       jTr.find('td:eq(0)').text(author.location);
       jTr.find('td:eq(1)').html('<a href="'+author.uri+'">'+author.name+'</a>');
+
+      if(highlightLocations) {
+        var found = false
+        if (author.location.length > 0) {
+          $.each(highlightLocations, function(idx, loc){
+            if(author.location.indexOf(loc) > -1) {
+              found = true;
+              return false;
+            }
+          });
+        }
+
+        if(!found) {
+          jTr.addClass('ntf-quiet');
+        }
+      }
     }); // fetch authorCache
   });
 

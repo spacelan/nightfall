@@ -1,3 +1,5 @@
 #content .aside { width: 145px }
 #content .article { width: 800px }
-#content .td-loc { width: 60px }
+.articlet .td-loc { width: 60px }
+.ntf-quiet td { color: #ccc !important }
+.ntf-quiet a { color: #ccc !important }

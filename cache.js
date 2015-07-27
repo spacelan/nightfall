@@ -1,3 +1,5 @@
+// TODO: clear cache
+
 window.NtfCache = (function(){
   TTL = 1000 * 60 * 60; // one hour
   NS = 'ntf.cache';
