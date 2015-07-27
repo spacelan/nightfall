@@ -19,12 +19,12 @@ window.NtfCache = (function(){
         value: value,
         updated_at: new Date()
       }
-      chrome.storage.sync.set(record);
+      chrome.storage.local.set(record);
     },
 
     get: function(key, callback){
       var pk = _prefix_key(key);
-      chrome.storage.sync.get(pk, function(items){
+      chrome.storage.local.get(pk, function(items){
         var record = items[pk];
         if(undefined == record || _is_expired(record)) {
           callback(null);
@@ -35,31 +35,31 @@ window.NtfCache = (function(){
       });
     },
 
-    fetch: function(key, onGenerate, onValue){
-      var pk = _prefix_key(key);
-      chrome.storage.sync.get(pk, function(items){
-        var record = items[pk];
-        if(undefined == record || _is_expired(record)) {
-          var value = onGenerate();
-
-          var record = {};
-          record[pk] = {
-            value: value,
-            updated_at: new Date()
-          }
-          chrome.storage.sync.set(record, function(){
-            onValue(value);
-          });
-
-        } else {
-          onValue(record['value']);
-        }
-      });
-    },
+    // fetch: function(key, onGenerate, onValue){
+    //   var pk = _prefix_key(key);
+    //   chrome.storage.sync.get(pk, function(items){
+    //     var record = items[pk];
+    //     if(undefined == record || _is_expired(record)) {
+    //       var value = onGenerate();
+    //
+    //       var record = {};
+    //       record[pk] = {
+    //         value: value,
+    //         updated_at: new Date()
+    //       }
+    //       chrome.storage.sync.set(record, function(){
+    //         onValue(value);
+    //       });
+    //
+    //     } else {
+    //       onValue(record['value']);
+    //     }
+    //   });
+    // },
 
     fetchAsync: function(key, onGenerate, onValue){
       var pk = _prefix_key(key);
-      chrome.storage.sync.get(pk, function(items){
+      chrome.storage.local.get(pk, function(items){
         var record = items[pk];
         if(undefined == record || _is_expired(record)) {
           onGenerate(function(value){
@@ -68,7 +68,7 @@ window.NtfCache = (function(){
               value: value,
               updated_at: new Date()
             }
-            chrome.storage.sync.set(record, function(){
+            chrome.storage.local.set(record, function(){
               onValue(value);
             });
           });
