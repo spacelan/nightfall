@@ -17,7 +17,7 @@
       authorCache = topicUri + '/author';
 
     // for better visual experience on table layout
-    jTr.prepend('<td /><td />');
+    jTr.prepend('<td class="td-loc" /><td class="td-author" />');
 
     NtfCache.fetchAsync(authorCache, function(setAuthor){
       // console.log('fetching: ' + authorCache);
