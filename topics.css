@@ -1,0 +1,6 @@
+.ntf.aside { width: 145px !important }
+.ntf.article { width: 800px !important }
+.ntf.article .td-loc { width: 60px }
+.ntf-quiet { display: none }
+/*.ntf-quiet td { color: #ccc !important }
+.ntf-quiet a { color: #ccc !important }*/
